@@ -150,18 +150,37 @@ END; $$ LANGUAGE plpgsql;
   Before an event is inserted, make sure the id, version and aggregate type are set
 */
 CREATE OR REPLACE FUNCTION public.handle_before_insert_event()
-RETURNS TRIGGER SECURITY DEFINER AS $$ BEGIN
+RETURNS TRIGGER SECURITY DEFINER AS $$
+DECLARE
+  aggregate_exists BOOLEAN;
+BEGIN
+  aggregate_exists := public.aggregate_exists(NEW.aggregate_id);
+
   IF NEW.event_type = 'create' THEN
-    IF NEW.aggregate_id IS NOT NULL AND public.aggregate_exists(NEW.aggregate_id) THEN
+    IF aggregate_exists THEN
       RAISE EXCEPTION 'Aggregate already exists';
+    ELSE
+      NEW.aggregate_id := COALESCE(NEW.aggregate_id, uuid_generate_v4());
+      NEW.version_number := 0;
     END IF;
-    NEW.aggregate_id := COALESCE(NEW.aggregate_id, uuid_generate_v4());
-    NEW.version_number := 0;
+
   ELSEIF NEW.event_type = 'update' THEN
-    NEW.aggregate_type := COALESCE((SELECT type FROM public.aggregates WHERE id = NEW.aggregate_id), NEW.aggregate_type);
-    NEW.version_number := public.next_version_number(NEW.aggregate_id);
-  ELSE
-    NEW.version_number := public.next_version_number(NEW.aggregate_id);
+    IF aggregate_exists THEN
+      NEW.aggregate_type := (SELECT type FROM public.aggregates WHERE id = NEW.aggregate_id LIMIT 1);
+      NEW.version_number := public.next_version_number(NEW.aggregate_id);
+    ELSE
+      RAISE EXCEPTION 'Aggregate does not exist';
+    END IF;
+
+  ELSEIF NEW.event_type = 'delete' THEN
+    IF aggregate_exists THEN
+      NEW.aggregate_type := (SELECT type FROM public.aggregates WHERE id = NEW.aggregate_id LIMIT 1);
+      NEW.version_number := public.next_version_number(NEW.aggregate_id);
+      NEW.event_data := COALESCE(NEW.event_data, '{}');
+    ELSE
+      RAISE EXCEPTION 'Aggregate does not exist';
+    END IF;
+
   END IF;
   RETURN NEW;
 END; $$ LANGUAGE plpgsql;
@@ -174,26 +193,45 @@ FOR EACH ROW EXECUTE FUNCTION public.handle_before_insert_event();
   After an event is inserted, create or update the aggregate
 */
 CREATE OR REPLACE FUNCTION public.handle_after_insert_event()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER SECURITY DEFINER AS $$
+DECLARE
+  aggregate_exists BOOLEAN;
 BEGIN
-  IF NEW.event_type = 'delete' THEN
-    DELETE FROM public.aggregates WHERE id = NEW.aggregate_id;
-  ELSEIF public.aggregate_exists(NEW.aggregate_id) THEN
-    UPDATE 
-      public.aggregates
-    SET 
-      version_number = result.version_number,
-      data = result.data
-    FROM
-      (SELECT (public.apply_event(agg.*, NEW)).*
-      FROM public.aggregates agg
-      WHERE agg.id = NEW.aggregate_id
-      ) AS result
-    WHERE 
-      public.aggregates.id = NEW.aggregate_id;
+  aggregate_exists := public.aggregate_exists(NEW.aggregate_id);
+  
+  IF NEW.event_type = 'create' THEN
+    IF aggregate_exists THEN
+      RAISE EXCEPTION 'Aggregate already exists';
+    ELSE
+      INSERT INTO public.aggregates (id, type, version_number, data)
+      SELECT * FROM public.build_aggregate(NEW.aggregate_id);      
+    END IF;
+  
+  ELSEIF NEW.event_type = 'delete' THEN
+    IF NOT aggregate_exists THEN
+      RAISE EXCEPTION 'Aggregate does not exist';
+    ELSE
+      DELETE FROM public.aggregates WHERE id = NEW.aggregate_id;
+    END IF;
+
   ELSE
-    INSERT INTO public.aggregates (id, type, version_number, data)
-    SELECT * FROM public.build_aggregate(NEW.aggregate_id);
+    IF aggregate_exists THEN
+      UPDATE 
+        public.aggregates
+      SET 
+        version_number = result.version_number,
+        data = result.data
+      FROM
+        (SELECT (public.apply_event(agg.*, NEW)).*
+        FROM public.aggregates agg
+        WHERE agg.id = NEW.aggregate_id
+        ) AS result
+      WHERE 
+        public.aggregates.id = NEW.aggregate_id;
+    ELSE
+      RAISE EXCEPTION 'Aggregate does not exist';
+    END IF;
+  
   END IF;
   RETURN NEW;
 END; $$ LANGUAGE plpgsql;
