@@ -2,13 +2,15 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { type Location } from "@/types/locations";
-import { PaginatedResult, PaginationInput } from "@/types/queries";
+import { type Location } from "@/types/models";
+import { type PaginationResult, type PaginationInput } from "@/lib/pagination";
 
 
-export type GetLocationsInput = PaginationInput<Location>;
+export type GetLocationsInput = PaginationInput;
 
-export type GetLocationsResult = PaginatedResult<Location>;
+export type GetLocationsResult = PaginationResult & {
+  data: Location[];
+};
 
 export async function getLocations(input: GetLocationsInput): Promise<GetLocationsResult> {
   const { offset = 0, limit = 10 } = input;

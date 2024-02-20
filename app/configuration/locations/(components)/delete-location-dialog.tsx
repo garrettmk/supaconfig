@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { deleteLocation } from "@/lib/actions/locations";
-import { type Location } from "@/types/locations";
+import { type Location } from "@/types/models";
 
 export type DeleteLocationDialogProps = {
   isOpen?: boolean;

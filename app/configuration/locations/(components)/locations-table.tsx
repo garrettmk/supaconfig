@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable } from "../../../../components/data-table";
+import { DataTable } from "@/components/data-table";
 import { useLocationTableColumns } from "./locations-table-columns";
 import { DeleteLocationDialog } from "./delete-location-dialog";
 import { EditLocationDrawer } from "./edit-location-drawer";
 import { LocationEventsDrawer } from "./location-events-drawer";
-import { type Location } from "@/types/locations";
+import { type Location } from "@/types/models";
 
 export type LocationsTableProps = {
   locations?: Location[];

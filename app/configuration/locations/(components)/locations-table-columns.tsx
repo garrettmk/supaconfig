@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button";
 import { CopyIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { useMemo } from "react";
-import { type Location } from "@/types/locations";
+import { type Location } from "@/types/models";
 
 export function useLocationTableColumns({
   openStream, 

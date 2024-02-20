@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { updateLocation } from "@/lib/actions/locations";
-import { type Location } from "@/types/locations";
+import { type Location } from "@/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { useEffect } from "react";

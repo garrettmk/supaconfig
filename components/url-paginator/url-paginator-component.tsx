@@ -1,11 +1,11 @@
 "use client";
 
 import { usePaginationSearchParams } from "@/lib/pagination";
-import { clamp } from "@/lib/utils";
 import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
 import clsx from "clsx";
+import { range, clamp } from "@/lib/utils";
 
 export type UrlPaginatorComponentProps = React.ComponentProps<typeof Pagination> & {
   count: number;
@@ -29,13 +29,13 @@ export function UrlPaginatorComponent(props: UrlPaginatorComponentProps) {
     return pathname + '?' + pageSearchParams.toString();
   }
 
-  const displayedRange = Array.from(
-    { length: Math.min(maxPages, totalPages) },
-    (_, i) => Math.min(
-      Math.max(currentPage - Math.floor(maxPages / 2), 1), 
-      Math.max(totalPages - maxPages + 1, 1)
-    ) + i
-  )
+  const displayedRange = range(
+    Math.max(currentPage - Math.floor(maxPages / 2), 1),
+    Math.min(currentPage + Math.floor(maxPages / 2), totalPages)
+  );
+
+  const displayPreviousEllipsis = currentPage > Math.ceil(maxPages / 2);
+  const displayNextEllipsis = currentPage < totalPages - Math.floor(maxPages / 2);
 
   return (
     <Pagination {...rest}>
@@ -46,7 +46,7 @@ export function UrlPaginatorComponent(props: UrlPaginatorComponentProps) {
             href={pageHref(currentPage - 1)}
           />
         </PaginationItem>
-        {currentPage > Math.ceil(maxPages / 2) && (
+        {displayPreviousEllipsis && (
           <PaginationItem>
             <PaginationEllipsis />
           </PaginationItem>
@@ -56,7 +56,7 @@ export function UrlPaginatorComponent(props: UrlPaginatorComponentProps) {
             <PaginationLink href={pageHref(page)} isActive={currentPage === page}>{page}</PaginationLink>
           </PaginationItem>
         ))}
-        {currentPage < totalPages - Math.floor(maxPages / 2) && (
+        {displayNextEllipsis && (
           <PaginationItem>
             <PaginationEllipsis />
           </PaginationItem>
