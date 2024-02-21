@@ -42,12 +42,12 @@ export function usePaginator(input: UsePaginatorInput) {
   const displayNextEllipsis = displayedRange[displayedRange.length - 1] < totalPages - 1;
 
   const nextPage = () => ({
-    offset: clamp(0, offset + limit, count - limit),
+    offset: clamp(0, offset + limit, count),
     limit
   });
 
   const previousPage = () => ({
-    offset: clamp(0, offset - limit, count - limit),
+    offset: clamp(0, offset - limit, count),
     limit
   });
 

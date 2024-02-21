@@ -17,7 +17,6 @@ export type GetEventStreamResult = PaginationResult & {
 };
 
 export async function getEventStream(input: GetEventStreamInput): Promise<GetEventStreamResult> {
-  await asyncTimeout(3000);
   const { aggregateId, offset = 0, limit = 10 } = input;
 
   const supabase = createClient();
