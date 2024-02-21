@@ -1,5 +1,5 @@
 import { getFromSearchParams } from "@/lib/url";
-import { range } from "@/lib/utils";
+import { clamp, range } from "@/lib/utils";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
 export type PaginationInput = {
@@ -42,17 +42,17 @@ export function usePaginator(input: UsePaginatorInput) {
   const displayNextEllipsis = displayedRange[displayedRange.length - 1] < totalPages - 1;
 
   const nextPage = () => ({
-    offset: offset + limit,
+    offset: clamp(0, offset + limit, count - limit),
     limit
   });
 
   const previousPage = () => ({
-    offset: offset - limit,
+    offset: clamp(0, offset - limit, count - limit),
     limit
   });
 
   const gotoPage = (page: number) => ({
-    offset: (page - 1) * limit,
+    offset: (clamp(1, page, totalPages) - 1) * limit,
     limit
   });
 

@@ -12,11 +12,11 @@ export type PaginatorProps = React.ComponentProps<typeof Pagination> & UsePagina
 
 export function Paginator(props: PaginatorProps) {
   const { count, offset, limit, maxPages, onUpdate, ...rest } = props;
-  const { 
-    currentPage, 
-    totalPages, 
-    displayedRange, 
-    displayPreviousEllipsis, 
+  const {
+    currentPage,
+    totalPages,
+    displayedRange,
+    displayPreviousEllipsis,
     displayNextEllipsis,
     nextPage,
     previousPage,
@@ -25,49 +25,50 @@ export function Paginator(props: PaginatorProps) {
 
   return (
     <Pagination {...rest}>
-    <PaginationContent>
-      <PaginationItem 
-        className={clsx(
-          cn("gap-1 pl-2.5", buttonVariants({ variant: 'ghost' })),
-          { 'pointer-events-none opacity-50': currentPage === 1 }
-        )}
-        onClick={() => onUpdate?.(previousPage())}
-      >
-        <ChevronLeftIcon className="h-4 w-4" />
-        <span>Previous</span>
-      </PaginationItem>
-      {displayPreviousEllipsis && (
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-      )}
-      {displayedRange.map(page => (
-        <PaginationItem 
-          key={page} 
+      <PaginationContent>
+        <PaginationItem
           className={clsx(
-            buttonVariants({ variant: currentPage === page ? 'outline' : 'ghost', size: 'icon' }),
+            cn("gap-1 pl-2.5", buttonVariants({ variant: 'ghost' })),
+            { 'pointer-events-none opacity-50': currentPage === 1 }
           )}
-          onClick={() => onUpdate?.(gotoPage(page))}
+          onClick={() => onUpdate?.(previousPage())}
         >
-          {page}
+          <ChevronLeftIcon className="h-4 w-4" />
+          <span>Previous</span>
         </PaginationItem>
-      ))}
-      {displayNextEllipsis && (
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-      )}
-      <PaginationItem 
-        className={clsx(
-          cn("gap-1 pr-2.5", buttonVariants({ variant: 'ghost' })),
-          { 'pointer-events-none opacity-50': currentPage === totalPages }
+        {displayPreviousEllipsis && (
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
         )}
-        onClick={() => onUpdate?.(nextPage())}
-      >
-        <span>Next</span>
-        <ChevronRightIcon className="h-4 w-4" />
-      </PaginationItem>
-    </PaginationContent>
-  </Pagination>
+        {displayedRange.map(page => (
+          <PaginationItem
+            key={page}
+            className={clsx(
+              { 'pointer-events-none opacity-50': currentPage === page},
+              buttonVariants({ variant: currentPage === page ? 'outline' : 'ghost', size: 'icon' }),
+            )}
+            onClick={() => onUpdate?.(gotoPage(page))}
+          >
+            {page}
+          </PaginationItem>
+        ))}
+        {displayNextEllipsis && (
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+        )}
+        <PaginationItem
+          className={clsx(
+            cn("gap-1 pr-2.5", buttonVariants({ variant: 'ghost' })),
+            { 'pointer-events-none opacity-50': currentPage === totalPages }
+          )}
+          onClick={() => onUpdate?.(nextPage())}
+        >
+          <span>Next</span>
+          <ChevronRightIcon className="h-4 w-4" />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 }
