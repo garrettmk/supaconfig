@@ -1,6 +1,8 @@
 "use client";
 
+import { CancelButton } from "@/components/cancel-button";
 import { Spinner } from "@/components/spinner";
+import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -46,9 +48,13 @@ export function CreateLocationDrawer() {
     }),
     onSettled: () => {
       setIsOpen(false);
-      form.reset();
     },
   });
+
+  useEffect(() => {
+    if (!isOpen)
+      form.reset();
+  }, [isOpen]);
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -85,18 +91,9 @@ export function CreateLocationDrawer() {
                 )}
               />
               <DrawerFooter className="px-0">
-                <Button type="submit">
-                  {isPending ? (
-                    <>
-                      <Spinner className="w-4 h-4 mr-2" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
+                <SubmitButton/>
                 <DrawerClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <CancelButton/>
                 </DrawerClose>
               </DrawerFooter>
             </form>

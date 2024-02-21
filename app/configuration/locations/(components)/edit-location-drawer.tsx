@@ -1,6 +1,8 @@
 "use client";
 
+import { CancelButton } from "@/components/cancel-button";
 import { Spinner } from "@/components/spinner";
+import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -102,18 +104,9 @@ export function EditLocationDrawer(props: EditLocationDrawerProps) {
                   )}
                 />
                 <DrawerFooter className="px-0">
-                  <Button type="submit">
-                    {isPending ? (
-                      <>
-                        <Spinner className="w-4 h-4 mr-2" />
-                        Submitting...
-                      </>
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
+                  <SubmitButton/>
                   <DrawerClose asChild>
-                    <Button variant="outline">Cancel</Button>
+                    <CancelButton/>
                   </DrawerClose>
                 </DrawerFooter>
               </form>
