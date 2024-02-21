@@ -6,7 +6,7 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { updateLocation } from "@/lib/actions/locations";
+import { useLocationEditMutation } from "@/lib/queries/locations";
 import { type Location } from "@/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
+  id: z.string(),
   name: z.string().min(2, {
     message: "Name must be at least 2 characters long",
   })
@@ -33,39 +34,33 @@ export function EditLocationDrawer(props: EditLocationDrawerProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: location?.id ?? '',
       name: location?.name ?? '',
     }
   });
 
   useEffect(() => {
-    form.reset({ name: location?.name ?? '' });
+    form.reset({ 
+      id: location?.id ?? '',
+      name: location?.name ?? ''
+    });
   }, [location]);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await updateLocation({
-        id: location?.id!,
-        name: values.name,
-      });
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: 'Error updating location',
-        description: (e as Error).message,
-        variant: 'destructive',
-      });
-      form.reset();
-      onOpenChange?.(false);
-      return;
-    }
-
-    toast({
+  const { mutate, isPending } = useLocationEditMutation({
+    onSuccess: (result, variables) => toast({
       title: 'Location updated',
-      description: `Location "${values.name}" has been updated.`,
-    });
-    form.reset();
-    onOpenChange?.(false);
-  };
+      description: `${variables?.name} has been updated.`,
+    }),
+    onError: error => toast({
+      title: 'Error updating location',
+      description: error.message,
+      variant: 'destructive',
+    }),
+    onSettled: () => {
+      onOpenChange?.(false);
+      form.reset();
+    },
+  });
 
   return (
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -78,10 +73,21 @@ export function EditLocationDrawer(props: EditLocationDrawerProps) {
             <Form {...form}>
               <form 
                 className={clsx("p-4 space-y-4", {
-                  'opacity-50 pointer-events-none': form.formState.isSubmitting,
+                  'opacity-50 pointer-events-none': isPending,
                 })}
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(mutate)}
               >
+                <FormField
+                  control={form.control}
+                  name="id"
+                  render={({ field}) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="hidden" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="name"
@@ -97,7 +103,7 @@ export function EditLocationDrawer(props: EditLocationDrawerProps) {
                 />
                 <DrawerFooter className="px-0">
                   <Button type="submit">
-                    {form.formState.isSubmitting ? (
+                    {isPending ? (
                       <>
                         <Spinner className="w-4 h-4 mr-2" />
                         Submitting...

@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createLocation } from "@/lib/actions/locations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
+import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,81 +30,79 @@ export function CreateLocationDrawer() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-    }
+    },
   });
-  
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await createLocation(values);
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: 'Error creating location',
-        description: (e as Error).message,
-        variant: 'destructive',
-      });
-      return;
-    }
-    toast({
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createLocation,
+    onSuccess: () => toast({
       title: 'Location created',
-      description: `Location "${values.name}" has been created.`,
-    });
-    setIsOpen(false);
-  };
+      description: 'Location has been created.',
+    }),
+    onError: error => toast({
+      title: 'Error creating location',
+      description: error.message,
+      variant: 'destructive',
+    }),
+    onSettled: () => {
+      setIsOpen(false);
+      form.reset();
+    },
+  });
 
   return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerTrigger asChild>
-          <Button variant="default">
-            <PlusIcon className="w-4 h-4 mr-2" />
-            Create location
-          </Button>
-        </DrawerTrigger>
-        <DrawerContent>
-          <div className="mx-auto w-full max-w-sm">
-            <DrawerHeader>
-              <DrawerTitle>Create Location</DrawerTitle>
-              <DrawerDescription>Create a new location</DrawerDescription>
-            </DrawerHeader>
-            <Form {...form}>
-              <form 
-                className={clsx("p-4 space-y-4", {
-                  'opacity-50 pointer-events-none': form.formState.isSubmitting,
-                })}
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Name" {...field} />
-                      </FormControl>
-                      <FormMessage/>
-                    </FormItem>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        <Button variant="default">
+          <PlusIcon className="w-4 h-4 mr-2" />
+          Create location
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="mx-auto w-full max-w-sm">
+          <DrawerHeader>
+            <DrawerTitle>Create Location</DrawerTitle>
+            <DrawerDescription>Create a new location</DrawerDescription>
+          </DrawerHeader>
+          <Form {...form}>
+            <form
+              className={clsx("p-4 space-y-4", {
+                'opacity-50 pointer-events-none': isPending,
+              })}
+              onSubmit={form.handleSubmit(input => mutate(input))}
+            >
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DrawerFooter className="px-0">
+                <Button type="submit">
+                  {isPending ? (
+                    <>
+                      <Spinner className="w-4 h-4 mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit"
                   )}
-                />
-                <DrawerFooter className="px-0">
-                  <Button type="submit">
-                    {form.formState.isSubmitting ? (
-                      <>
-                        <Spinner className="w-4 h-4 mr-2" />
-                        Submitting...
-                      </>
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
-                  <DrawerClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              </form>
-            </Form>
-          </div>
-        </DrawerContent>
-      </Drawer>
+                </Button>
+                <DrawerClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </form>
+          </Form>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

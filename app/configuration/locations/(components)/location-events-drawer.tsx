@@ -5,11 +5,9 @@ import { Spinner } from "@/components/spinner";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { GetEventStreamInput, getEventStream } from "@/lib/actions/events";
-import { type PaginationInput } from "@/lib/pagination";
+import { useEventsQuery, useEventsQueryInput } from "@/lib/queries/events";
 import { type Location } from "@/types/models";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 
 export type LocationEventsDrawerProps = {
@@ -22,37 +20,25 @@ export function LocationEventsDrawer(props: LocationEventsDrawerProps) {
   const { location, isOpen , onOpenChange } = props;
   const { toast } = useToast();
 
-  const [queryInput, setQueryInput] = useState<GetEventStreamInput>({
-    aggregateId: location?.id ?? '',
-    offset: 0,
-    limit: 10
+  const [queryInput, { setInput, updateInput, resetInput }] = useEventsQueryInput({
+    aggregateId: location?.id ?? ''
   });
 
-  const updatePagination = (pagination: PaginationInput) => setQueryInput((old) =>({
-    ...old,
-    ...pagination
-  }));
+  const { data, error, isFetching } = useEventsQuery({
+    input: queryInput,
+    enabled: Boolean(isOpen && queryInput.aggregateId),
+  });
 
   useEffect(() => {
     if (!isOpen)
-      setTimeout(() => updatePagination({ offset: 0 }), 300);
+      setTimeout(resetInput, 300);
   }, [isOpen]);
 
   useEffect(() => {
     if (location)
-      setQueryInput((old) => ({ ...old, aggregateId: location.id }));
+      setInput({ aggregateId: location.id });
   }, [location]);
 
-  const { data, error, isFetching } = useQuery({
-    enabled: Boolean(isOpen && queryInput.aggregateId),
-    queryKey: ['events', queryInput.aggregateId, queryInput] as const,
-    queryFn: async () => getEventStream(queryInput),
-    placeholderData: (previousData, previousQuery) => {
-      if (previousQuery?.queryKey[1] !== location?.id)
-        return undefined;
-      return previousData;
-    }
-  });
 
   useEffect(() => {
     if (error) {
@@ -107,7 +93,7 @@ export function LocationEventsDrawer(props: LocationEventsDrawerProps) {
               count={data?.count ?? 0}
               offset={data?.offset ?? 0}
               limit={data?.limit ?? 10}
-              onUpdate={updatePagination}
+              onUpdate={updateInput}
             />
           ) : isFetching ? (
             <div className="text-center text-gray-500 mb-4">
