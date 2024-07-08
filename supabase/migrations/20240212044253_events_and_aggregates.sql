@@ -100,6 +100,27 @@ AS $$ BEGIN
 END $$ LANGUAGE plpgsql;
 
 /*
+  Applies updates to a JSONB object
+*/
+
+CREATE OR REPLACE FUNCTION public.apply_jsonb_updates(original JSONB, updates JSONB)
+RETURNS JSONB AS $$
+DECLARE
+  result JSONB := original;
+  key TEXT;
+  value JSONB;
+BEGIN
+  FOR key, value IN SELECT * FROM jsonb_each(updates) LOOP
+    result := jsonb_set(
+      result,
+      string_to_array(key, '.'),
+      value
+    );
+  END LOOP;
+  RETURN result;
+END; $$ LANGUAGE plpgsql;
+
+/*
   Applies an event to an aggregate and returns the result
 */
 CREATE OR REPLACE FUNCTION public.apply_event(aggregate aggregates, event events)
@@ -118,7 +139,7 @@ BEGIN
       new_aggregate;
   ELSEIF event.event_type = 'update' THEN
     new_aggregate.version_number := event.version_number;
-    new_aggregate.data := new_aggregate.data || event.event_data;
+    new_aggregate.data := public.apply_jsonb_updates(new_aggregate.data, event.event_data);
   ELSEIF event.event_type = 'delete' THEN
     new_aggregate := NULL;
   ELSE

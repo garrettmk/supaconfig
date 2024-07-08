@@ -5,10 +5,14 @@ import { GearIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
+import { redirect } from "next/navigation";
 
 export default async function ConfigurationLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user)
+    return redirect('/login');
   
   return (
     <Providers>

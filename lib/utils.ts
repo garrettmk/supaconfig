@@ -26,3 +26,7 @@ export function isEmpty(obj: object) {
   if (Array.isArray(obj)) return obj.length === 0;
   return Object.keys(obj).length === 0;
 }
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

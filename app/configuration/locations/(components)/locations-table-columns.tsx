@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CopyIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { useMemo } from "react";
 import { type Location } from "@/types/models";
+import Link from "next/link";
 
 export function useLocationTableColumns({
   openStream, 
@@ -18,6 +19,15 @@ export function useLocationTableColumns({
 }): ColumnDef<Location>[] {
   return useMemo(
     () => ([
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => (
+          <Link className="hover:underline" href={`/configuration/locations/${row.original.id}`}>
+            {row.original.name}
+          </Link>
+        )
+      },
       {
         accessorKey: "id",
         header: "ID",
@@ -40,10 +50,6 @@ export function useLocationTableColumns({
       {
         accessorKey: "version",
         header: "Version",
-      },
-      {
-        accessorKey: "name",
-        header: "Name",
       },
       {
         id: 'actions',
