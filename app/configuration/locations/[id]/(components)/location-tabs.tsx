@@ -19,8 +19,8 @@ export function LocationTabs(props: LocationTabsProps) {
         <Link href={`/configuration/locations/${id}/`}>
           <TabsTrigger value="details">Details</TabsTrigger>
         </Link>
-        <Link href={`/configuration/locations/${id}/schedule`}>
-          <TabsTrigger value="schedule">Schedule</TabsTrigger>
+        <Link href={`/configuration/locations/${id}/events`}>
+          <TabsTrigger value="events">Events</TabsTrigger>
         </Link>
       </TabsList>
     </Tabs>

@@ -1,5 +1,34 @@
-export default async function LocationIndex() {
+import { getLocation } from "@/lib/actions/locations";
+import { LocationDefaultHoursCard } from "./(components)/location-default-hours-card";
+import { LocationDetailsCard } from "./(components)/location-details-card";
+import { LocationSpecialtyHoursCard } from "./(components)/location-specialty-hours-card";
+
+export default async function LocationIndex({
+  params: {
+    id
+  }
+}: {
+  params: {
+    id: string
+  }
+}) {
+  const location = await getLocation(id);
+
   return (
-    <h2>Details</h2>
+    <section> 
+      <LocationDetailsCard
+        location={location}
+      />
+      
+      <LocationDefaultHoursCard
+        className="mt-12"
+        location={location}
+      />
+
+      <LocationSpecialtyHoursCard
+        className="mt-12"
+        location={location}
+      />
+    </section>
   );
 }

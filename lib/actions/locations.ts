@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { type Location } from "@/types/models";
 import { type PaginationResult, type PaginationInput } from "@/lib/pagination";
 import { asyncTimeout } from "../utils";
-import { Time } from '@internationalized/date';
 
 
 export type GetLocationInput = string;
@@ -165,11 +164,13 @@ export async function setLocationDefaultHours(input: SetLocationDefaultHoursInpu
 }
 
 
+export type SpecialtyHours = {
+  [date: string]: DailyHours
+}
+
 export type SetLocationHoursInput = {
   id: string;
-  specialtyHours: {
-    [date: string]: DailyHours;
-  };
+  specialtyHours: SpecialtyHours;
 }
 
 export async function setLocationHours(input: SetLocationHoursInput) {
@@ -205,19 +206,6 @@ export async function getLocationDefaultHours(input: GetLocationDefaultHoursInpu
 
   if (error)
     throw new Error(error.details ?? error.message, { cause: error});
-
-  // const hours = Object.fromEntries(
-  //   Object.entries(data.default_hours as WeeklyHours).map(([day, hours]) => [
-  //     day,
-  //     {
-  //       isOpen: hours.isOpen,
-  //       open: new Time(hours.open.hour, hours.open.minute),
-  //       close: new Time(hours.close.hour, hours.close.minute),
-  //       break: new Time(hours.break.hour, hours.break.minute),
-  //       breakDuration: hours.breakDuration
-  //     }
-  //   ])
-  // );
 
   return data.default_hours;
 }

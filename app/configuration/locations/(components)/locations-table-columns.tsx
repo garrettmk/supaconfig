@@ -7,6 +7,8 @@ import { CopyIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { useMemo } from "react";
 import { type Location } from "@/types/models";
 import Link from "next/link";
+import { copyToClipboard } from "@/lib/utils";
+import { CopyToClipboardButton } from "@/components/copy-button";
 
 export function useLocationTableColumns({
   openStream, 
@@ -36,14 +38,7 @@ export function useLocationTableColumns({
             <span className="inline-block max-w-24 overflow-hidden text-ellipsis text-nowrap">
               {getValue<string>()}
             </span>
-              <Button
-                variant="secondary"
-                size="icon"
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => navigator.clipboard.writeText(getValue<string>())}
-              >
-                <CopyIcon className="w-4 h-4" />
-              </Button>
+            <CopyToClipboardButton valueToCopy={getValue<string>()} />
           </div>
         )
       },
@@ -66,7 +61,7 @@ export function useLocationTableColumns({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(location.id!)}
+                  onClick={() => copyToClipboard(location.id)}
                 >
                   Copy ID
                 </DropdownMenuItem>
