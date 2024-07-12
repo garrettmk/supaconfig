@@ -1,6 +1,6 @@
 import { UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DeleteLocationInput, DeleteLocationResult, UpdateLocationInput, UpdateLocationResult, deleteLocation, updateLocation } from "../actions/locations";
-import { useEventsQuery } from "./events";
+import { DeleteLocationInput, DeleteLocationResult, UpdateLocationInput, UpdateLocationResult, deleteLocation, updateLocation } from "./actions";
+import { useEventsQuery } from "../events/queries";
 
 export type UseLocationUpdateMutationInput = Omit<UseMutationOptions<UpdateLocationResult, Error, UpdateLocationInput>, 'mutationFn'>;
 

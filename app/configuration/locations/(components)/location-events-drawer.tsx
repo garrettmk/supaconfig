@@ -5,8 +5,8 @@ import { Spinner } from "@/components/spinner";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { useEventsQuery, useEventsQueryInput } from "@/lib/queries/events";
-import { type Location } from "@/types/models";
+import { useEventsQuery, useEventsQueryInput } from "@/lib/events/queries";
+import { type Location } from "@/lib/locations/types";
 import { useEffect } from "react";
 
 

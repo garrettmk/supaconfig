@@ -1,29 +1,21 @@
 import { EventsTable } from "@/components/events-table";
 import { UrlPaginator } from "@/components/url-paginator";
-import { getEventStream } from "@/lib/actions/events";
+import { getEventStream } from "@/lib/events/actions";
+import { usePaginationSearchParams } from "@/lib/pagination";
 
 export default async function LocationEvents({
   params: {
     id,
   },
-  searchParams: {
-    offset = '0',
-    limit = '10'
-  }
+  searchParams
 }: {
   params: {
     id: string
   },
-  searchParams: {
-    offset?: string;
-    limit?: string;
-  }
+  searchParams: Record<string, string>;
 }) {
-  const { data = [], error, count } = await getEventStream({
-    aggregateId: id,
-    offset: Number(offset),
-    limit: Number(limit)
-  });
+  const { offset, limit } = usePaginationSearchParams(searchParams);
+  const { data = [], error, count } = await getEventStream({ aggregateId: id, offset, limit });
 
   return (
     <section>

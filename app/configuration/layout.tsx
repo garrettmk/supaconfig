@@ -1,6 +1,6 @@
 import { Sidebar } from "@/components/sidebar";
 import { UserMenuButton } from "@/components/user-menu-button";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { GearIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Providers } from "./providers";

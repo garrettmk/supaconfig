@@ -1,11 +1,15 @@
 'use server';
 
-import { createClient } from "@/utils/supabase/server";
+import { type PaginationInput, type PaginationResult } from "@/lib/pagination";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { type Location } from "@/types/models";
-import { type PaginationResult, type PaginationInput } from "@/lib/pagination";
-import { asyncTimeout } from "../utils";
+import { asyncTimeout } from "../utils/utils";
+import { type SpecialtyHours, type WeeklyHours, type Location } from "./types";
 
+
+/**
+ * Get a location by its ID
+ */
 
 export type GetLocationInput = string;
 
@@ -25,6 +29,9 @@ export async function getLocation(input: GetLocationInput): Promise<GetLocationR
   return data;
 }
 
+/**
+ * Get all locations
+ */
 
 export type GetLocationsInput = PaginationInput;
 
@@ -53,6 +60,9 @@ export async function getLocations(input: GetLocationsInput): Promise<GetLocatio
   };
 }
 
+/**
+ * Create a new location
+ */
 
 export type CreateLocationInput = {
   name: string;
@@ -74,6 +84,9 @@ export async function createLocation(input: CreateLocationInput) {
   revalidatePath('/configuration/locations');
 }
 
+/**
+ * Delete a location
+ */
 
 export type DeleteLocationInput = {
   id: string;
@@ -99,6 +112,9 @@ export async function deleteLocation(input: DeleteLocationInput) {
   revalidatePath('/configuration/locations');
 }
 
+/**
+ * Update a location
+ */
 
 export type UpdateLocationInput = {
   id: string;
@@ -123,24 +139,9 @@ export async function updateLocation(input: UpdateLocationInput) {
   revalidatePath('/configuration/locations');
 }
 
-
-export type DailyHours = {
-  isOpen: boolean;
-  open: { hour: number; minute: number; };
-  close: { hour: number; minute: number; };
-  break: { hour: number; minute: number; };
-  breakDuration: number;
-};
-
-export type WeeklyHours = {
-  sunday: DailyHours;
-  monday: DailyHours;
-  tuesday: DailyHours;
-  wednesday: DailyHours;
-  thursday: DailyHours;
-  friday: DailyHours;
-  saturday: DailyHours;
-};
+/**
+ * Set the default hours for a location
+ */
 
 export type SetLocationDefaultHoursInput = {
   id: string;
@@ -163,10 +164,9 @@ export async function setLocationDefaultHours(input: SetLocationDefaultHoursInpu
   revalidatePath(`/configuration/locations/${input.id}/schedule`);
 }
 
-
-export type SpecialtyHours = {
-  [date: string]: DailyHours
-}
+/**
+ * Set the specialty hours for a location
+ */
 
 export type SetLocationHoursInput = {
   id: string;
@@ -191,6 +191,9 @@ export async function setLocationHours(input: SetLocationHoursInput) {
   revalidatePath(`/configuration/locations/${input.id}/schedule`);
 }
 
+/**
+ * Get the default hours for a location
+ */
 
 export type GetLocationDefaultHoursInput = {
   id: string;

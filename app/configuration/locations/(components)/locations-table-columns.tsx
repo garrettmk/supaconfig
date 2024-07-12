@@ -1,14 +1,14 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { CopyIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { useMemo } from "react";
-import { type Location } from "@/types/models";
-import Link from "next/link";
-import { copyToClipboard } from "@/lib/utils";
 import { CopyToClipboardButton } from "@/components/copy-button";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { type Location } from "@/lib/locations/types";
+import { copyToClipboard } from "@/lib/utils/utils";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
+import { useMemo } from "react";
 
 export function useLocationTableColumns({
   openStream, 

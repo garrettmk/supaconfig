@@ -2,7 +2,7 @@
 
 import { buttonVariants } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils/cn";
 import { UsePaginatorInput, usePaginator } from "@/lib/pagination";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";

@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@/components/theme-provider';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 

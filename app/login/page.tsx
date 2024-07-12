@@ -1,8 +1,7 @@
-import Link from "next/link";
-import { headers } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { GearIcon } from "@radix-ui/react-icons";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default function Login({
   searchParams,

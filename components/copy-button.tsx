@@ -1,4 +1,4 @@
-import { copyToClipboard } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/utils/utils";
 import { Button, ButtonProps } from "./ui/button";
 import { CopyIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";

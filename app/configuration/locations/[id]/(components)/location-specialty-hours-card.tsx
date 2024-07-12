@@ -3,22 +3,22 @@
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { TimeInput } from "@/components/ui/time-input";
 import { useToast } from "@/components/ui/use-toast";
-import { DailyHours, SetLocationHoursInput, setLocationHours } from "@/lib/actions/locations";
-import { isEmpty } from "@/lib/utils";
-import { Location } from "@/types/models";
-import { Json } from "@/types/supabase";
+import { type SetLocationHoursInput, setLocationHours } from "@/lib/locations/actions";
+import { type DailyHours, type Location } from "@/lib/locations/types";
+import { Json } from "@/lib/supabase/types";
+import { isEmpty } from "@/lib/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Time } from '@internationalized/date';
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import { daysInWeek } from "../(utils)/hours";
 
 
 export const dailyHoursFormSchema = z.object({
@@ -96,34 +96,17 @@ export function nextAvailableDate(location: Location): Date {
   if (lastSpecialtyDate)
     nextDate.setDate(lastSpecialtyDate.getDate() + 1);
 
-  console.log({
-    lastSpecialtyDate,
-    specialtyHours: Object.keys(location.specialty_hours).slice(-1)[0],
-    nextDate,
-    location
-  });
-
   return nextDate;
 
 }
 
 export function getDefaultHours(location: Location, date: Date): DailyHours | undefined {
-  const daysOfTheWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const dayOfWeek = daysOfTheWeek[date.getDay()];
+  const dayOfWeek = daysInWeek[date.getDay()];
   const defaultHours = (location.default_hours as any)?.[dayOfWeek] as DailyHours | undefined;
-
-  console.log({ defaultHours });
-
 
   return defaultHours;
 }
 
-export function getWeekday(dateStr: string): string {
-  const date = new Date(dateStr + 'T00:00:00');
-  const daysOfTheWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-  return daysOfTheWeek[date.getDay()];
-}
 
 
 export type LocationSpecialtyHoursCardProps = {
@@ -137,7 +120,7 @@ export function LocationSpecialtyHoursCard(props: LocationSpecialtyHoursCardProp
 
   const form = useForm<LocationSpecialtyHoursFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: specialtyHoursToFormValues(location.specialty_hours as object)
+    defaultValues: specialtyHoursToFormValues(location.specialty_hours as object ?? {})
   });
 
   const dateFields = useFieldArray({ control: form.control, name: 'specialtyHours' });
@@ -241,12 +224,12 @@ export function LocationSpecialtyHoursCard(props: LocationSpecialtyHoursCardProp
                         </Button>
                       </div>
                       <FormField control={form.control} name={`specialtyHours.${index}.hours.isOpen`} render={({ field }) => (
-                          <FormItem className="justify-self-end flex items-center space-y-0 space-x-3 basis-full">
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange}/>
-                            </FormControl>
-                          </FormItem>
-                        )} />
+                        <FormItem className="justify-self-end flex items-center space-y-0 space-x-3 basis-full">
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )} />
                       <FormField control={form.control} name={`specialtyHours.${index}.hours.open`} render={({ field }) => (
                         <FormItem className="justify-self-end space-y-0">
                           <FormLabel className="sr-only">Open</FormLabel>

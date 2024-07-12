@@ -2,20 +2,20 @@
 
 import { SubmitButton } from "@/components/submit-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { TimeInput } from "@/components/ui/time-input";
 import { useToast } from "@/components/ui/use-toast";
-import { DailyHours, WeeklyHours, setLocationDefaultHours } from "@/lib/actions/locations";
-import { capitalize } from "@/lib/utils";
-import { Location } from "@/types/models";
+import { setLocationDefaultHours } from "@/lib/locations/actions";
+import { type DailyHours, type Location, type WeeklyHours } from "@/lib/locations/types";
+import { capitalize } from "@/lib/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Time } from '@internationalized/date';
 import { Fragment } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { daysInWeek } from "../(utils)/hours";
 
 const dailyHoursFormSchema = z.object({
   isOpen: z.boolean(),
@@ -36,8 +36,6 @@ const formSchema = z.object({
 });
 
 export type HoursFormValues = z.infer<typeof formSchema>;
-
-export const daysInWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
 export type LocationDefaultHoursCardProps = {
   className?: string;

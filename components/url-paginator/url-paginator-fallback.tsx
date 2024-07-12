@@ -1,5 +1,5 @@
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { buttonVariants } from "@/components/ui/button";
 

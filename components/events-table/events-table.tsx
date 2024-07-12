@@ -1,6 +1,6 @@
 "use client";
 
-import { type Event } from "@/types/models";
+import { type Event } from "@/lib/events/types";
 import { DataTable } from "../data-table";
 import { useEventsTableColumns } from './events-table-columns';
 import { useState } from "react";

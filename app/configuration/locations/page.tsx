@@ -1,5 +1,5 @@
 import { UrlPaginator } from "@/components/url-paginator";
-import { getLocations } from "@/lib/actions/locations";
+import { getLocations } from "@/lib/locations/actions";
 import { usePaginationSearchParams } from "@/lib/pagination";
 import { CreateLocationDrawer } from "./(components)/create-location-drawer";
 import { LocationsTable } from "./(components)/locations-table";

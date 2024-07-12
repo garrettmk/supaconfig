@@ -1,4 +1,4 @@
-import { getLocation } from "@/lib/actions/locations";
+import { getLocation } from "@/lib/locations/actions";
 import Link from "next/link";
 import { LocationTabs } from "./(components)/location-tabs";
 

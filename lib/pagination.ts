@@ -1,5 +1,5 @@
-import { getFromSearchParams } from "@/lib/url";
-import { clamp, range } from "@/lib/utils";
+import { getFromSearchParams } from "@/lib/utils/url";
+import { clamp, range } from "@/lib/utils/utils";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
 export type PaginationInput = {

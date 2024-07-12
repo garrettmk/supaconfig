@@ -1,9 +1,8 @@
 'use server';
 
 import { type PaginationInput, type PaginationResult } from "@/lib/pagination";
-import { asyncTimeout } from "@/lib/utils";
 import { type Event } from "@/types/models";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { PostgrestError } from "@supabase/supabase-js";
 
 

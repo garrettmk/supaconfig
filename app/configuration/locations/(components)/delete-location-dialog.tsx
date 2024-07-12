@@ -4,8 +4,8 @@ import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { useLocationDeleteMutation } from "@/lib/queries/locations";
-import { type Location } from "@/types/models";
+import { useLocationDeleteMutation } from "@/lib/locations/queries";
+import { type Location } from "@/lib/locations/types";
 
 export type DeleteLocationDialogProps = {
   isOpen?: boolean;

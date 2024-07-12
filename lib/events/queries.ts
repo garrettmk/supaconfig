@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GetEventStreamInput, GetEventStreamResult, getEventStream } from "@/lib/actions/events";
+import { GetEventStreamInput, GetEventStreamResult, getEventStream } from "./actions";
 import { QueryClient, UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 export function useEventsQueryInput(defaultValue?: GetEventStreamInput) {

@@ -1,14 +1,13 @@
 "use client";
 
 import { CancelButton } from "@/components/cancel-button";
-import { Spinner } from "@/components/spinner";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { createLocation } from "@/lib/actions/locations";
+import { createLocation } from "@/lib/locations/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";

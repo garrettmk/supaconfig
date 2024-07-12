@@ -1,4 +1,4 @@
-import { getLocation } from "@/lib/actions/locations";
+import { getLocation } from "@/lib/locations/actions";
 import { LocationDefaultHoursCard } from "./(components)/location-default-hours-card";
 import { LocationDetailsCard } from "./(components)/location-details-card";
 import { LocationSpecialtyHoursCard } from "./(components)/location-specialty-hours-card";

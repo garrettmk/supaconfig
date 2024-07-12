@@ -1,12 +1,12 @@
 "use client";
 
+import { CopyToClipboardButton } from "@/components/copy-button";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Location } from "@/types/models";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
+import { type Location } from "@/lib/locations/types";
 import { useState } from "react";
 import { EditLocationDrawer } from "../../(components)/edit-location-drawer";
-import { CopyToClipboardButton } from "@/components/copy-button";
 
 export type LocationDetailsCardProps = {
   className?: string;
