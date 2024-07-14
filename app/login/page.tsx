@@ -65,6 +65,7 @@ export default function Login({
         </label>
         <input
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
+          id="email"
           name="email"
           placeholder="you@example.com"
           required
@@ -74,8 +75,9 @@ export default function Login({
         </label>
         <input
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          type="password"
+          id="password"
           name="password"
+          type="password"
           placeholder="••••••••"
           required
         />
