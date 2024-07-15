@@ -1,62 +1,80 @@
-"use client";
-
-import { DataTable } from "@/components/data-table";
+import { CopyToClipboardButton } from "@/components/copy-button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { type Location } from "@/lib/locations/types";
-import { useState } from "react";
-import { DeleteLocationDialog } from "./delete-location-dialog";
-import { EditLocationDrawer } from "./edit-location-drawer";
-import { LocationEventsDrawer } from "./location-events-drawer";
-import { useLocationTableColumns } from "./locations-table-columns";
+import Link from "next/link";
 
-export type LocationsTableProps = {
+export type LocationsTableProps = React.ComponentProps<typeof Table> & {
   locations?: Location[];
+  sortByNameUrl?: string;
+  sortByIdUrl?: string;
+  sortByVersionUrl?: string;
 };
 
 export function LocationsTable(props: LocationsTableProps) {
-  const { locations = [] } = props;
-  const [selectedLocation, setSelectedLocation] = useState<Location | undefined>();
-
-  const [isViewingStream, setisViewingStream] = useState(false);
-  const openStream = (location: Location) => {
-    setSelectedLocation(location);
-    setisViewingStream(true);
-  };
-
-  const [isEditingLocation, setisEditingLocation] = useState(false);
-  const editLocation = (location: Location) => {
-    setSelectedLocation(location);
-    setisEditingLocation(true);
-  };
-
-  const [isDeletingLocation, setisDeletingLocation] = useState(false);
-  const deleteLocation = (location: Location) => {
-    setSelectedLocation(location);
-    setisDeletingLocation(true);
-  };
-
-  const columns = useLocationTableColumns({ openStream, editLocation, deleteLocation });
+  const {
+    locations = [], 
+    sortByNameUrl, 
+    sortByIdUrl, 
+    sortByVersionUrl, 
+    ...tableProps
+  } = props;
 
   return (
-    <div>
-      <DataTable
-        columns={columns}
-        data={locations}
-      />
-      <LocationEventsDrawer
-        isOpen={isViewingStream}
-        location={selectedLocation}
-        onOpenChange={setisViewingStream}
-      />
-      <EditLocationDrawer
-        isOpen={isEditingLocation}
-        location={selectedLocation}
-        onOpenChange={setisEditingLocation}
-      />
-      <DeleteLocationDialog
-        isOpen={isDeletingLocation}
-        location={selectedLocation}
-        onOpenChange={setisDeletingLocation}
-      />
-    </div>
+    <Table {...tableProps}>
+      <TableHeader>
+        <TableRow>
+          <TableHead>
+            {sortByNameUrl ? (
+              <Link className="hover:underline" href={sortByNameUrl}>
+                Name
+              </Link>
+            ) : (
+              "Name"
+            )}
+          </TableHead>
+          <TableHead>
+            {sortByIdUrl ? (
+              <Link className="hover:underline" href={sortByIdUrl}>
+                ID
+              </Link>
+            ) : (
+              "ID"
+            )}
+          </TableHead>
+          <TableHead>
+            {sortByVersionUrl ? (
+              <Link className="hover:underline" href={sortByVersionUrl}>
+                Version
+              </Link>
+            ) : (
+              "Version"
+            )}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {locations.map(location => (
+          <TableRow key={location.id}>
+            <TableCell>
+              <Link className="hover:underline" href={`/configuration/locations/${location.id}`}>
+                {location.name}
+              </Link>
+            </TableCell>
+            <TableCell className="group">
+              {location.id}
+              <CopyToClipboardButton
+                className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                valueToCopy={location.id}
+              />
+            </TableCell>
+            <TableCell>
+              <Link className="hover:underline" href={`/configuration/locations/${location.id}/events`}>
+                {location.version}
+              </Link>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

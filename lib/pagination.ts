@@ -14,7 +14,7 @@ export type PaginationResult = {
 };
 
 
-export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams | Record<string, string>) {
+export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams | Record<string, string>): PaginationInput {
   return {
     offset: Number(getFromSearchParams(searchParams, 'offset', '0')),
     limit: Number(getFromSearchParams(searchParams, 'limit', '10'))
@@ -22,8 +22,7 @@ export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams 
 }
 
 
-export type UsePaginatorInput = PaginationInput & {
-  count: number;
+export type UsePaginatorInput = PaginationResult & {
   maxPages?: number;
 };
 
@@ -41,13 +40,15 @@ export function usePaginator(input: UsePaginatorInput) {
   const displayPreviousEllipsis = displayedRange[0] > 2;
   const displayNextEllipsis = displayedRange[displayedRange.length - 1] < totalPages - 1;
 
+  const maxOffset = Math.floor(count / limit) * limit;
+
   const nextPage = () => ({
-    offset: clamp(0, offset + limit, count),
+    offset: clamp(0, offset + limit, maxOffset),
     limit
   });
 
   const previousPage = () => ({
-    offset: clamp(0, offset - limit, count),
+    offset: clamp(0, offset - limit, maxOffset),
     limit
   });
 
@@ -65,5 +66,46 @@ export function usePaginator(input: UsePaginatorInput) {
     nextPage,
     previousPage,
     gotoPage,
+  };
+}
+
+
+
+export type UsePaginationUrlsInput = {
+  baseUrl?: string;
+  searchParams?: Record<string, string>;
+  paginationResult: PaginationResult;
+}
+
+export type UsePaginationUrlsResult = {
+  previousPage?: string;
+  currentPage?: string;
+  nextPage?: string;
+  displayedRange: Record<string, string>;
+}
+
+export function usePaginationUrls({
+  baseUrl = '',
+  searchParams = {},
+  paginationResult,
+}: UsePaginationUrlsInput): UsePaginationUrlsResult {
+  const { nextPage, currentPage, previousPage, gotoPage, displayedRange } = usePaginator(paginationResult);
+
+  const toHref = ({ offset = 0, limit = 10 }: PaginationInput) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('offset', offset.toString());
+    newSearchParams.set('limit', limit.toString());
+
+    return `${baseUrl}?${newSearchParams.toString()}`;
+  };
+
+  return {
+    nextPage: toHref(nextPage()),
+    currentPage: toHref(gotoPage(currentPage)),
+    previousPage: toHref(previousPage()),
+    displayedRange: Object.fromEntries(displayedRange.map(page => [
+      page,
+      toHref(gotoPage(page))
+    ]))
   };
 }

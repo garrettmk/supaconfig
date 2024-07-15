@@ -1,7 +1,9 @@
 import { EventsTable } from "@/components/events-table";
+import { SsrPagination } from "@/components/ssr-pagination";
 import { UrlPaginator } from "@/components/url-paginator";
 import { getEventStream } from "@/lib/events/actions";
-import { usePaginationSearchParams } from "@/lib/pagination";
+import { PaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
+import { pick } from "@/lib/utils/utils";
 
 export default async function LocationEvents({
   params: {
@@ -15,23 +17,25 @@ export default async function LocationEvents({
   searchParams: Record<string, string>;
 }) {
   const { offset, limit } = usePaginationSearchParams(searchParams);
-  const { data = [], error, count } = await getEventStream({ aggregateId: id, offset, limit });
+  const getEventStreamResult = await getEventStream({ aggregateId: id, offset, limit });
+  const events = getEventStreamResult.data ?? [];
+  const paginationResult = pick(getEventStreamResult, ['count', 'limit', 'offset']) as PaginationResult;
+
+  const ssrPagination = usePaginationUrls({
+    baseUrl: `/configuration/locations/${id}/events`,
+    searchParams,
+    paginationResult
+  });
 
   return (
     <section>
       <EventsTable
-        events={data}
+        events={events}
       />
-      {data?.length ? (
-        <UrlPaginator
-          className="mt-4"
-          count={count ?? 0}
-        />
-      ) : (
-        <div className="text-center text-gray-500 mb-4">
-          No events found
-        </div>
-      )}
+      <SsrPagination
+        className="mt-4"
+        {...ssrPagination}
+      />
     </section>
   );
 }

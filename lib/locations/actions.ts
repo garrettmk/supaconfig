@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { asyncTimeout } from "../utils/utils";
 import { type SpecialtyHours, type WeeklyHours, type Location } from "./types";
+import { SortingInput, SortingResult } from "../sorting";
 
 
 /**
@@ -33,20 +34,20 @@ export async function getLocation(input: GetLocationInput): Promise<GetLocationR
  * Get all locations
  */
 
-export type GetLocationsInput = PaginationInput;
+export type GetLocationsInput = PaginationInput & SortingInput;
 
-export type GetLocationsResult = PaginationResult & {
+export type GetLocationsResult = PaginationResult & SortingResult & {
   data: Location[];
 };
 
 export async function getLocations(input: GetLocationsInput): Promise<GetLocationsResult> {
-  const { offset = 0, limit = 10 } = input;
+  const { offset = 0, limit = 10, sortKey = 'name', sortDirection = 'asc' } = input;
 
   const supabase = createClient();
   const { data, error, count } = await supabase
     .from("locations")
     .select("*", { count: 'exact' })
-    .order('name', { ascending: true })
+    .order(sortKey, { ascending: sortDirection === 'asc' })
     .range(offset, offset + limit - 1);
 
   if (error)
@@ -56,7 +57,9 @@ export async function getLocations(input: GetLocationsInput): Promise<GetLocatio
     data,
     count: count ?? 0,
     offset,
-    limit
+    limit,
+    sortKey,
+    sortDirection
   };
 }
 

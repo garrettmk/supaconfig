@@ -38,3 +38,11 @@ export function truncate(str: string, length: number = 20) {
 export function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
+
+export function pick<T extends object, K extends keyof T>(from: T, fields: K[]) {
+  return Object.fromEntries(
+    Object
+      .entries(from)
+      .filter(([key, value]) => fields.includes(key as K))
+  );
+}
