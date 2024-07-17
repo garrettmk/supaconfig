@@ -71,6 +71,7 @@ export function CreateLocationDrawer() {
           </DrawerHeader>
           <Form {...form}>
             <form
+              data-testid="create-location-form"
               className={clsx("p-4 space-y-4", {
                 'opacity-50 pointer-events-none': isPending,
               })}

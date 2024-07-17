@@ -1,50 +1,62 @@
 import { signedInTest, expect } from "@/e2e/setup/signed-in-test-setup";
 import { Locator, Page } from "@playwright/test";
 
-export class LocationsTable {
-  public nameColumnHeader: Locator;
-  public nameCells: Locator;
-  public idColumnHeader: Locator;
-  public idCells: Locator;
-  public versionColumnHeader: Locator;
-  public versionCells: Locator;
+export class TableTester {
+  constructor(public page: Page) {}
 
-  constructor(public page: Page) {
-    this.nameColumnHeader = page.getByRole('cell', { name: 'Name' });
-    this.nameCells = page.locator('tbody td:nth-child(1)');
-    this.idColumnHeader = page.getByRole('cell', { name: 'ID' });
-    this.idCells = page.locator('tbody td:nth-child(2)');
-    this.versionColumnHeader = page.getByRole('cell', { name: 'Version' });
-    this.versionCells = page.locator('tbody td:nth-child(3)');
+  static hasEqualValues(valuesLeft: any[], valuesRight: any[]): boolean {
+    return valuesLeft.length === valuesRight.length && valuesLeft.reduce(
+      (result, valueLeft, index) => {
+        if (!result) 
+          return false;
+
+        return valuesLeft[index] === valuesRight[index];
+      },
+      true
+    )
   }
 
-  async sortByName() {
-    await this.nameColumnHeader.click();
+  headerLocator(text: string) {
+    return this.page.getByRole('cell', { name: text });
   }
 
-  async getNameValues() {
-    return this.idCells.allInnerTexts();
+  async sortBy(header: string) {
+    await this.headerLocator(header).click();
   }
 
-  async sortById() {
-    await this.idColumnHeader.click();
+  async getCells(header: string) {
+    const headerIndex = await this.headerLocator(header).evaluate(headerCell => {
+      const headerCells = Array.from(headerCell.parentElement!.children);
+      return headerCells.indexOf(headerCell);
+    });
+
+    return this.page.locator(`tbody td:nth-child(${headerIndex + 1})`);
   }
 
-  async getIdValues() {
-    return this.idCells.allInnerTexts();
+  async getValues(header: string) {
+    const locator = await this.getCells(header);
+    return locator.allInnerTexts();
   }
 
-  async sortByVersion() {
-    await this.versionColumnHeader.click();
+  async isSorted(header: string, direction: 'asc' | 'desc' = 'asc') {
+    const valuesLeft = await this.getValues(header);
+    const valuesRight = direction === 'asc' ? valuesLeft.sort() : valuesLeft.sort().reverse();
+
+    return TableTester.hasEqualValues(valuesLeft, valuesRight);
   }
 
-  async getVersionValues() {
-    return await this.versionCells.allInnerTexts();
+  async getCell(header: string, row: number) {
+    const headerIndex = await this.headerLocator(header).evaluate(headerCell => {
+      const headerCells = Array.from(headerCell.parentElement!.children);
+      return headerCells.indexOf(headerCell);
+    });
+
+    return this.page.locator(`tbody tr:nth-child(${row}) td:nth-child(${headerIndex + 1})`);
   }
 }
 
 const test = signedInTest.extend<{
-  locationsTable: LocationsTable
+  locationsTable: TableTester
 }>({
   page: async ({ browser }, use) => {
     const page = await browser.newPage();
@@ -53,86 +65,85 @@ const test = signedInTest.extend<{
     await use(page);
   },
 
-  locationsTable: ({ page }, use) => use(new LocationsTable(page))
+  locationsTable: ({ page }, use) => use(new TableTester(page))
 });
 
 
 /**
- * Sorting by name
+ * Column sorting
  */
 
-test('is initially sorted by name', async ({ locationsTable }) => {
-  const nameValues = await locationsTable.getNameValues();
+const sortableColumns = ['Name', 'ID', 'Version'];
+const initiallySortedBy = 'Name';
 
-  await expect(nameValues).toEqual(nameValues.sort());
-})
+for (const column of sortableColumns) {
+  if (column === initiallySortedBy)
+    test(`is initially sorted by ${initiallySortedBy} asc`, async ({ locationsTable }) => {
+      await expect(await locationsTable.isSorted(column, 'asc')).toBe(true);
+    });
 
-test('should sort by name desc', async ({ locationsTable }) => {
-  await locationsTable.sortByName();
-  const nameValues = await locationsTable.getNameValues();
+  const direction = column === initiallySortedBy ? 'desc' : 'asc';
+  
+  test(`should sort by ${column} ${direction}`, async ({ locationsTable }) => {
+    await locationsTable.sortBy(column);
+    await expect(await locationsTable.isSorted(column, direction)).toBe(true);
+  });
 
-  await expect(nameValues).toEqual(nameValues.sort().reverse());
-});
+  const oppositeDirection = direction === 'asc' ? 'desc' : 'asc';
+
+  test(`should sort by ${column} ${oppositeDirection}`, async ({ locationsTable }) => {
+    await locationsTable.sortBy(column);
+    await expect(await locationsTable.isSorted(column, direction)).toBe(true);
+
+    await locationsTable.sortBy(column);
+    await expect(await locationsTable.isSorted(column, oppositeDirection)).toBe(true);
+  });
+}
 
 
-test('should sort by name asc', async ({ locationsTable }) => {
-  await locationsTable.sortByName();
-  let nameValues = await locationsTable.getNameValues();
+/**
+ * Navigate to location
+ */
 
-  await expect(nameValues).toEqual(nameValues.sort().reverse());
+test('should navigate to location', async ({ locationsTable, page }) => {
+  const idCell = (await locationsTable.getCell('ID', 1));
+  const id = await idCell.textContent();
 
-  await locationsTable.sortByName();
-  nameValues = await locationsTable.getNameValues();
+  const nameLink = (await locationsTable.getCell('Name', 1)).getByRole('link');
+  await nameLink.click();
+  await page.waitForLoadState('networkidle');
 
-  await expect(nameValues).toEqual(nameValues.sort());
+  await expect(page).toHaveURL(`/configuration/locations/${id}`);
 });
 
 
 /**
- * Sorting by ID
+ * Copy ID to clipboard
  */
 
-test('should sort by ID desc', async ({ locationsTable }) => {
-  await locationsTable.sortById();
-  const idValues = await locationsTable.getIdValues();
+test('should copy ID to clipboard', async ({ locationsTable, page }) => {
+  const idCell = await locationsTable.getCell('ID', 1);
+  const id = await idCell.textContent();
 
-  await expect(idValues).toEqual(idValues.sort().reverse());
-});
+  const copyButton = await idCell.getByRole('button');
+  await copyButton.click();
 
-
-test('should sort by ID asc', async ({ locationsTable }) => {
-  await locationsTable.sortById();
-  let idValues = await locationsTable.getIdValues();
-
-  await expect(idValues).toEqual(idValues.sort().reverse());
-
-  await locationsTable.sortById();
-  idValues = await locationsTable.getIdValues();
-
-  await expect(idValues).toEqual(idValues.sort());
+  const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+  await expect(clipboardText).toContain(id);
 });
 
 
 /**
- * Sorting by version
+ * Navigate to events
  */
 
-test('should sort by version desc', async ({ locationsTable }) => {
-  await locationsTable.sortByVersion();
-  const versionValues = await locationsTable.getVersionValues();
+test('should navigate to event stream', async ({ locationsTable, page }) => {
+  const idCell = await locationsTable.getCell('ID', 1);
+  const id = await idCell.textContent();
 
-  await expect(versionValues).toEqual(versionValues.sort().reverse());
-});
+  const versionLink = (await locationsTable.getCell('Version', 1)).getByRole('link');
+  await versionLink.click();
+  await page.waitForLoadState('networkidle');
 
-
-test('should sort by version asc', async ({ locationsTable }) => {
-  await locationsTable.sortByVersion();
-  let versionValues = await locationsTable.getVersionValues();
-
-  await expect(versionValues).toEqual(versionValues.sort().reverse());
-
-  await locationsTable.sortByVersion();
-  versionValues = await locationsTable.getVersionValues();
-
-  await expect(versionValues).toEqual(versionValues.sort());
+  await expect(page).toHaveURL(`/configuration/locations/${id}/events`);
 });
