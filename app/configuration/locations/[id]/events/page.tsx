@@ -1,9 +1,7 @@
 import { EventsTable } from "@/components/events-table";
 import { SsrPagination } from "@/components/ssr-pagination";
-import { UrlPaginator } from "@/components/url-paginator";
 import { getEventStream } from "@/lib/events/actions";
-import { PaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
-import { pick } from "@/lib/utils/utils";
+import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
 
 export default async function LocationEvents({
   params: {
@@ -19,12 +17,13 @@ export default async function LocationEvents({
   const { offset, limit } = usePaginationSearchParams(searchParams);
   const getEventStreamResult = await getEventStream({ aggregateId: id, offset, limit });
   const events = getEventStreamResult.data ?? [];
-  const paginationResult = pick(getEventStreamResult, ['count', 'limit', 'offset']) as PaginationResult;
+  const paginationResult = pickPaginationResult(getEventStreamResult);
 
   const ssrPagination = usePaginationUrls({
     baseUrl: `/configuration/locations/${id}/events`,
     searchParams,
-    paginationResult
+    paginationResult,
+    maxPages: 3
   });
 
   return (

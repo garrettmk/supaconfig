@@ -14,7 +14,7 @@ export type SsrPaginationProps = React.ComponentProps<typeof Pagination> & {
 
 export function SsrPagination(props: SsrPaginationProps) {
   const { 
-    maxPages = 3, 
+    maxPages = 5,
     currentPage = 1, 
     previousPage = '',
     nextPage = '',

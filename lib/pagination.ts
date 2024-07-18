@@ -1,6 +1,10 @@
 import { getFromSearchParams } from "@/lib/utils/url";
-import { clamp, range } from "@/lib/utils/utils";
+import { clamp, pick, range } from "@/lib/utils/utils";
 import { ReadonlyURLSearchParams } from "next/navigation";
+
+/**
+ * Types
+ */
 
 export type PaginationInput = {
   offset?: number;
@@ -13,7 +17,20 @@ export type PaginationResult = {
   limit: number;
 };
 
+/**
+ * Utils
+ */
 
+export function pickPaginationResult<T extends PaginationResult>(input: T): PaginationResult {
+  return pick(input, ['count', 'limit', 'offset']) as PaginationResult;
+}
+
+/**
+ * Process URLSearchParams into a PaginationInput.
+ * 
+ * @param searchParams 
+ * @returns PaginationInput
+ */
 export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams | Record<string, string>): PaginationInput {
   return {
     offset: Number(getFromSearchParams(searchParams, 'offset', '0')),
@@ -22,11 +39,26 @@ export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams 
 }
 
 
-export type UsePaginatorInput = PaginationResult & {
+/**
+ * Logic related to pagination.
+ */
+
+export type UsePaginationInput = PaginationResult & {
   maxPages?: number;
 };
 
-export function usePaginator(input: UsePaginatorInput) {
+export type UsePaginationResult = {
+  currentPage: number;
+  totalPages: number;
+  displayedRange: number[];
+  displayPreviousEllipsis: boolean;
+  displayNextEllipsis: boolean;
+  nextPage: () => PaginationInput;
+  previousPage: () => PaginationInput;
+  gotoPage: (page: number) => PaginationInput;
+};
+
+export function usePagination(input: UsePaginationInput): UsePaginationResult {
   const { count, offset = 0, limit = 10, maxPages = 5 } = input;
 
   const currentPage = Math.floor(offset / limit) + 1;
@@ -37,10 +69,12 @@ export function usePaginator(input: UsePaginatorInput) {
     Math.min(currentPage + Math.floor(maxPages / 2), totalPages)
   );
 
-  const displayPreviousEllipsis = displayedRange[0] > 2;
-  const displayNextEllipsis = displayedRange[displayedRange.length - 1] < totalPages - 1;
+  const displayPreviousEllipsis = displayedRange[0] >= 2;
+  const displayNextEllipsis = displayedRange[displayedRange.length - 1] < totalPages;
 
   const maxOffset = Math.floor(count / limit) * limit;
+
+  console.log({ maxOffset, totalPages, currentPage });
 
   const nextPage = () => ({
     offset: clamp(0, offset + limit, maxOffset),
@@ -70,11 +104,15 @@ export function usePaginator(input: UsePaginatorInput) {
 }
 
 
+/**
+ * URLs for SSR pagination
+ */
 
 export type UsePaginationUrlsInput = {
   baseUrl?: string;
   searchParams?: Record<string, string>;
   paginationResult: PaginationResult;
+  maxPages?: number;
 }
 
 export type UsePaginationUrlsResult = {
@@ -82,14 +120,25 @@ export type UsePaginationUrlsResult = {
   currentPage?: string;
   nextPage?: string;
   displayedRange: Record<string, string>;
+  displayNextEllipsis: boolean;
+  displayPreviousEllipsis: boolean;
 }
 
 export function usePaginationUrls({
   baseUrl = '',
   searchParams = {},
   paginationResult,
+  maxPages = 5
 }: UsePaginationUrlsInput): UsePaginationUrlsResult {
-  const { nextPage, currentPage, previousPage, gotoPage, displayedRange } = usePaginator(paginationResult);
+  const {
+    nextPage, 
+    currentPage, 
+    previousPage, 
+    gotoPage, 
+    displayedRange, 
+    displayNextEllipsis, 
+    displayPreviousEllipsis
+  } = usePagination({ ...paginationResult, maxPages });
 
   const toHref = ({ offset = 0, limit = 10 }: PaginationInput) => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -106,6 +155,8 @@ export function usePaginationUrls({
     displayedRange: Object.fromEntries(displayedRange.map(page => [
       page,
       toHref(gotoPage(page))
-    ]))
+    ])),
+    displayNextEllipsis,
+    displayPreviousEllipsis
   };
 }
