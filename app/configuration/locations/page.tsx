@@ -47,6 +47,8 @@ export default async function ConfigurationLocations({
         sortByNameUrl={sortingUrl('name')}
         sortByIdUrl={sortingUrl('id')}
         sortByVersionUrl={sortingUrl('version')}
+        sortByCreatedUrl={sortingUrl('created_at')}
+        sortByUpdatedUrl={sortingUrl('updated_at')}
       />
       <SsrPagination
         className="mt-4"

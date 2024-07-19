@@ -74,8 +74,6 @@ export function usePagination(input: UsePaginationInput): UsePaginationResult {
 
   const maxOffset = Math.floor(count / limit) * limit;
 
-  console.log({ maxOffset, totalPages, currentPage });
-
   const nextPage = () => ({
     offset: clamp(0, offset + limit, maxOffset),
     limit

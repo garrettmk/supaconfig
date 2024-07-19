@@ -1,5 +1,5 @@
-import { type Database } from "@/lib/supabase/supabase";
-import { type NonNullableObject } from "@/types/utils";
+import { type Database } from "@/lib/supabase/types";
+import { type NonNullableObject } from "@/lib/utils/types";
 
 export type Location = NonNullableObject<Database['public']['Views']['locations']['Row']>;
 

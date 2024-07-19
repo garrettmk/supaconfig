@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { type Event } from "@/lib/events/types";
-import { truncate } from "@/lib/utils/utils";
+import { formatDateString, truncate } from "@/lib/utils/utils";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
@@ -18,6 +18,13 @@ export function useEventsTableColumns({
     {
       accessorKey: 'version_number',
       header: 'Sequence Number'
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Created At',
+      cell: ({ getValue }) => (
+        formatDateString(getValue() as string)
+      )
     },
     {
       accessorKey: 'event_type',

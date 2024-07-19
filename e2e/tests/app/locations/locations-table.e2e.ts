@@ -73,7 +73,7 @@ const test = signedInTest.extend<{
  * Column sorting
  */
 
-const sortableColumns = ['Name', 'ID', 'Version'];
+const sortableColumns = ['Name', 'ID', 'Version', 'Created At', 'Updated At'];
 const initiallySortedBy = 'Name';
 
 for (const column of sortableColumns) {

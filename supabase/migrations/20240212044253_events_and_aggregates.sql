@@ -17,7 +17,7 @@ CREATE TABLE public.events (
   version_number INTEGER NOT NULL,
   event_type VARCHAR(64) NOT NULL,
   event_data JSONB NOT NULL,
-  -- created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   -- created_by UUID REFERENCES auth.users(id) NOT NULL,
   CONSTRAINT id_sequence_number UNIQUE (aggregate_id, version_number)
 );
@@ -39,9 +39,9 @@ CREATE TABLE public.aggregates (
   id UUID PRIMARY KEY,
   type AGG_TYPE NOT NULL,
   version_number INTEGER NOT NULL,
-  data JSONB NOT NULL
-  -- created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-  -- updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+  data JSONB NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE public.aggregates IS 'Event stream aggregates';
@@ -134,12 +134,15 @@ BEGIN
       event.aggregate_id as id, 
       event.aggregate_type as type,
       event.version_number, 
-      event.event_data as data
+      event.event_data as data,
+      event.created_at as created_at,
+      event.created_at as updated_at
     INTO 
       new_aggregate;
   ELSEIF event.event_type = 'update' THEN
     new_aggregate.version_number := event.version_number;
     new_aggregate.data := public.apply_jsonb_updates(new_aggregate.data, event.event_data);
+    new_aggregate.updated_at := event.created_at;
   ELSEIF event.event_type = 'delete' THEN
     new_aggregate := NULL;
   ELSE
@@ -224,7 +227,7 @@ BEGIN
     IF aggregate_exists THEN
       RAISE EXCEPTION 'Aggregate already exists';
     ELSE
-      INSERT INTO public.aggregates (id, type, version_number, data)
+      INSERT INTO public.aggregates (id, type, version_number, data, created_at, updated_at)
       SELECT * FROM public.build_aggregate(NEW.aggregate_id);      
     END IF;
   
@@ -241,7 +244,8 @@ BEGIN
         public.aggregates
       SET 
         version_number = result.version_number,
-        data = result.data
+        data = result.data,
+        updated_at = result.updated_at
       FROM
         (SELECT (public.apply_event(agg.*, NEW)).*
         FROM public.aggregates agg

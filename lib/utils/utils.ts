@@ -46,3 +46,9 @@ export function pick<T extends object, K extends keyof T>(from: T, fields: K[]) 
       .filter(([key, value]) => fields.includes(key as K))
   );
 }
+
+export function formatDateString(str: string): string {
+  const date = new Date(str);
+
+  return date.toLocaleString();
+}

@@ -4,7 +4,9 @@ CREATE VIEW public.locations AS
     aggregates.version_number AS version,
     aggregates.data->>'name' AS name,
     aggregates.data->'defaultHours' AS default_hours,
-    aggregates.data->'specialtyHours' AS specialty_hours
+    aggregates.data->'specialtyHours' AS specialty_hours,
+    aggregates.created_at AS created_at,
+    aggregates.updated_at AS updated_at
   FROM 
     public.aggregates
   WHERE 
