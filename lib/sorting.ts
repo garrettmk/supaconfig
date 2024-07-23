@@ -1,5 +1,6 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { getFromSearchParams } from "./utils/url";
+import { pick } from "./utils/utils";
 
 export type SortingInput = {
   sortKey?: string;
@@ -36,7 +37,7 @@ export function useSorting(input: UseSortingInput) {
 }
 
 
-export type UseSortingUrlsInput = {
+export type UseSortingUrlInput = {
   baseUrl?: string;
   searchParams?: Record<string, string>;
   sortingResult?: SortingResult;
@@ -46,7 +47,7 @@ export function useSortingUrl({
   baseUrl = '',
   searchParams = {},
   sortingResult = {},
-}: UseSortingUrlsInput) {
+}: UseSortingUrlInput) {
   return (sortKey: string) => {
     const newSearchParams = new URLSearchParams(searchParams);
     if (sortKey) {
@@ -60,4 +61,48 @@ export function useSortingUrl({
 
     return `${baseUrl}?${newSearchParams.toString()}`;
   }
+}
+
+
+export type UseSortingUrlsInput = {
+  keys: string[];
+  baseUrl?: string;
+  searchParams?: Record<string, string>;
+  sortingResult?: SortingResult;
+}
+
+export type UseSortingUrlsResult = Record<string, string>;
+
+export function useSortingUrls({
+  keys,
+  baseUrl = '',
+  searchParams = {},
+  sortingResult = {},
+}: UseSortingUrlsInput) {
+  const makeSortingUrl = (sortKey: string) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (sortKey) {
+      const newSortDirection = sortingResult.sortKey === sortKey 
+        ? sortingResult.sortDirection === 'asc' ? 'desc' : 'asc'
+        : 'asc';
+
+      newSearchParams.set('sortKey', sortKey);
+      newSearchParams.set('sortDirection', newSortDirection);
+    }
+
+    return `${baseUrl}?${newSearchParams.toString()}`;
+  }
+
+  return keys.reduce(
+    (result, key) => {
+      result[key] = makeSortingUrl(key);
+      return result;
+    },
+    {} as UseSortingUrlsResult
+  );
+}
+
+
+export function pickSortingResult<T extends SortingResult>(input: T): SortingResult {
+  return pick(input, ['sortKey', 'sortDirection']);
 }
