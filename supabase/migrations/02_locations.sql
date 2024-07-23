@@ -1,16 +1,20 @@
 CREATE VIEW public.locations AS
   SELECT
-    aggregates.id AS id,
-    aggregates.version_number AS version,
-    aggregates.data->>'name' AS name,
-    aggregates.data->'defaultHours' AS default_hours,
-    aggregates.data->'specialtyHours' AS specialty_hours,
-    aggregates.created_at AS created_at,
-    aggregates.updated_at AS updated_at
+    agg.id AS id,
+    agg.version_number AS version,
+    agg.data->>'name' AS name,
+    agg.data->'defaultHours' AS default_hours,
+    agg.data->'specialtyHours' AS specialty_hours,
+    agg.created_at AS created_at,
+    agg.updated_at AS updated_at,
+    agg.created_by AS created_by,
+    agg.updated_by AS updated_by,
+    public.user_json(agg.created_by) AS created_by_user,
+    public.user_json(agg.updated_by) AS updated_by_user
   FROM 
-    public.aggregates
+    public.aggregates agg
   WHERE 
-    public.aggregates.type = 'location';
+    agg.type = 'location';
 
 
 /*

@@ -1,7 +1,7 @@
 'use server';
 
 import { type PaginationInput, type PaginationResult } from "@/lib/pagination";
-import { type Event } from "@/types/models";
+import { type Event } from "@/lib/events/types";
 import { createClient } from "@/lib/supabase/server";
 import { PostgrestError } from "@supabase/supabase-js";
 
@@ -21,7 +21,7 @@ export async function getEventStream(input: GetEventStreamInput): Promise<GetEve
   const supabase = createClient();
   const { data, error, count } = await supabase
     .from('events')
-    .select('*', { count: 'exact'})
+    .select('*, created_by (id, name)', { count: 'exact'})
     .eq('aggregate_id', aggregateId)
     .order('version_number', { ascending: true })
     .range(offset, offset + limit - 1);

@@ -12,35 +12,57 @@ export type Database = {
       aggregates: {
         Row: {
           created_at: string
+          created_by: string | null
           data: Json
           id: string
           type: Database["public"]["Enums"]["agg_type"]
           updated_at: string
+          updated_by: string | null
           version_number: number
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           data: Json
           id: string
           type: Database["public"]["Enums"]["agg_type"]
           updated_at?: string
+          updated_by?: string | null
           version_number: number
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           data?: Json
           id?: string
           type?: Database["public"]["Enums"]["agg_type"]
           updated_at?: string
+          updated_by?: string | null
           version_number?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "aggregates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aggregates_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
           aggregate_id: string
           aggregate_type: Database["public"]["Enums"]["agg_type"]
           created_at: string
+          created_by: string | null
           event_data: Json
           event_id: number
           event_type: string
@@ -50,6 +72,7 @@ export type Database = {
           aggregate_id: string
           aggregate_type: Database["public"]["Enums"]["agg_type"]
           created_at?: string
+          created_by?: string | null
           event_data: Json
           event_id?: number
           event_type: string
@@ -59,10 +82,34 @@ export type Database = {
           aggregate_id?: string
           aggregate_type?: Database["public"]["Enums"]["agg_type"]
           created_at?: string
+          created_by?: string | null
           event_data?: Json
           event_id?: number
           event_type?: string
           version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -71,32 +118,59 @@ export type Database = {
       locations: {
         Row: {
           created_at: string | null
+          created_by: string | null
+          created_by_user: Json | null
           default_hours: Json | null
           id: string | null
           name: string | null
           specialty_hours: Json | null
           updated_at: string | null
+          updated_by: string | null
+          updated_by_user: Json | null
           version: number | null
         }
         Insert: {
           created_at?: string | null
+          created_by?: string | null
+          created_by_user?: never
           default_hours?: never
           id?: string | null
           name?: never
           specialty_hours?: never
           updated_at?: string | null
+          updated_by?: string | null
+          updated_by_user?: never
           version?: number | null
         }
         Update: {
           created_at?: string | null
+          created_by?: string | null
+          created_by_user?: never
           default_hours?: never
           id?: string | null
           name?: never
           specialty_hours?: never
           updated_at?: string | null
+          updated_by?: string | null
+          updated_by_user?: never
           version?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "aggregates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aggregates_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
@@ -113,10 +187,12 @@ export type Database = {
         }
         Returns: {
           created_at: string
+          created_by: string | null
           data: Json
           id: string
           type: Database["public"]["Enums"]["agg_type"]
           updated_at: string
+          updated_by: string | null
           version_number: number
         }
       }
@@ -134,10 +210,12 @@ export type Database = {
         }
         Returns: {
           created_at: string
+          created_by: string | null
           data: Json
           id: string
           type: Database["public"]["Enums"]["agg_type"]
           updated_at: string
+          updated_by: string | null
           version_number: number
         }
       }
@@ -150,6 +228,7 @@ export type Database = {
           aggregate_id: string
           aggregate_type: Database["public"]["Enums"]["agg_type"]
           created_at: string
+          created_by: string | null
           event_data: Json
           event_id: number
           event_type: string
@@ -220,6 +299,12 @@ export type Database = {
           agg_id: string
         }
         Returns: number
+      }
+      user_json: {
+        Args: {
+          user_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {

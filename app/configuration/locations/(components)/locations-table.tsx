@@ -56,12 +56,12 @@ export function LocationsTable(props: LocationsTableProps) {
             )}
           </TableHead>
           <TableHead>
-            {sortByCreatedUrl ? (
-              <Link className="hover:underline" href={sortByCreatedUrl}>
-                Created At
+            {sortByUpdatedUrl ? (
+              <Link className="hover:underline" href={sortByUpdatedUrl}>
+                Updated By
               </Link>
             ): (
-              "Created At"
+              "Updated By"
             )}
           </TableHead>
           <TableHead>
@@ -96,7 +96,7 @@ export function LocationsTable(props: LocationsTableProps) {
               </Link>
             </TableCell>
             <TableCell>
-              {formatDateString(location.created_at)}
+              {(location.updated_by_user as any)?.name}
             </TableCell>
             <TableCell>
               {formatDateString(location.updated_at)}
