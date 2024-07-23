@@ -1,4 +1,4 @@
-import { getFromSearchParams } from "@/lib/utils/url";
+import { getFromSearchParams, makeUrl } from "@/lib/utils/url";
 import { clamp, pick, range } from "@/lib/utils/utils";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
@@ -138,13 +138,11 @@ export function usePaginationUrls({
     displayPreviousEllipsis
   } = usePagination({ ...paginationResult, maxPages });
 
-  const toHref = ({ offset = 0, limit = 10 }: PaginationInput) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set('offset', offset.toString());
-    newSearchParams.set('limit', limit.toString());
-
-    return `${baseUrl}?${newSearchParams.toString()}`;
-  };
+  const toHref = ({ offset = 0, limit = 10 }: PaginationInput) => makeUrl({
+    baseUrl,
+    searchParams,
+    set: { offset, limit }
+  });
 
   return {
     nextPage: toHref(nextPage()),

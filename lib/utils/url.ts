@@ -10,7 +10,7 @@ export function getFromSearchParams(searchParams: URLSearchParams | ReadonlyURLS
 export type MakeUrlInput = {
   baseUrl?: string;
   searchParams?: Record<string, string>;
-  set?: Record<string, string>;
+  set?: Record<string, string | number>;
   delete?: string[];
 }
 
@@ -23,7 +23,7 @@ export function makeUrl({
   const newSearchParams = new URLSearchParams(searchParams);
 
   for (const [key, value] of Object.entries(set)) {
-    newSearchParams.set(key, value);
+    newSearchParams.set(key, value + '');
   }
 
   for (const key of deleteValues) {
