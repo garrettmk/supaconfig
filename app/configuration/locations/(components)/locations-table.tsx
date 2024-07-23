@@ -6,21 +6,13 @@ import Link from "next/link";
 
 export type LocationsTableProps = React.ComponentProps<typeof Table> & {
   locations?: Location[];
-  sortByNameUrl?: string;
-  sortByIdUrl?: string;
-  sortByVersionUrl?: string;
-  sortByCreatedUrl?: string;
-  sortByUpdatedUrl?: string;
+  sortingUrls?: Partial<Record<keyof Location, string>>;
 };
 
 export function LocationsTable(props: LocationsTableProps) {
   const {
     locations = [], 
-    sortByNameUrl, 
-    sortByIdUrl, 
-    sortByVersionUrl, 
-    sortByCreatedUrl,
-    sortByUpdatedUrl,
+    sortingUrls = {},
     ...tableProps
   } = props;
 
@@ -29,8 +21,8 @@ export function LocationsTable(props: LocationsTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead>
-            {sortByNameUrl ? (
-              <Link className="hover:underline" href={sortByNameUrl}>
+            {sortingUrls['name'] ? (
+              <Link className="hover:underline" href={sortingUrls['name']}>
                 Name
               </Link>
             ) : (
@@ -38,8 +30,8 @@ export function LocationsTable(props: LocationsTableProps) {
             )}
           </TableHead>
           <TableHead>
-            {sortByIdUrl ? (
-              <Link className="hover:underline" href={sortByIdUrl}>
+            {sortingUrls['id'] ? (
+              <Link className="hover:underline" href={sortingUrls['id']}>
                 ID
               </Link>
             ) : (
@@ -47,8 +39,8 @@ export function LocationsTable(props: LocationsTableProps) {
             )}
           </TableHead>
           <TableHead>
-            {sortByVersionUrl ? (
-              <Link className="hover:underline" href={sortByVersionUrl}>
+            {sortingUrls['version'] ? (
+              <Link className="hover:underline" href={sortingUrls['version']}>
                 Version
               </Link>
             ) : (
@@ -56,8 +48,8 @@ export function LocationsTable(props: LocationsTableProps) {
             )}
           </TableHead>
           <TableHead>
-            {sortByUpdatedUrl ? (
-              <Link className="hover:underline" href={sortByUpdatedUrl}>
+            {sortingUrls['updated_by'] ? (
+              <Link className="hover:underline" href={sortingUrls['updated_by']}>
                 Updated By
               </Link>
             ): (
@@ -65,8 +57,8 @@ export function LocationsTable(props: LocationsTableProps) {
             )}
           </TableHead>
           <TableHead>
-            {sortByUpdatedUrl ? (
-              <Link className="hover:underline" href={sortByUpdatedUrl}>
+            {sortingUrls['updated_at'] ? (
+              <Link className="hover:underline" href={sortingUrls['updated_at']}>
                 Updated At
               </Link>
             ) : (

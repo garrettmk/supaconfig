@@ -1,7 +1,7 @@
 import { SsrPagination } from "@/components/ssr-pagination";
 import { getLocations } from "@/lib/locations/actions";
 import { PaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
-import { SortingResult, useSortingSearchParams, useSortingUrl } from "@/lib/sorting";
+import { SortingResult, useSortingSearchParams, useSortingUrls } from "@/lib/sorting";
 import { pick } from "@/lib/utils/utils";
 import { CreateLocationDrawer } from "./(components)/create-location-drawer";
 import { LocationsTable } from "./(components)/locations-table";
@@ -21,7 +21,8 @@ export default async function ConfigurationLocations({
   const paginationResult = pick(getLocationsResult, ['count', 'limit', 'offset']) as PaginationResult;
   const sortingResult = pick(getLocationsResult, ['sortKey', 'sortDirection']) as SortingResult;
 
-  const sortingUrl = useSortingUrl({
+  const sortingUrls = useSortingUrls({
+    keys: ['name', 'id', 'version', 'created_at', 'updated_at'],
     baseUrl: '/configuration/locations',
     searchParams,
     sortingResult,
@@ -44,11 +45,7 @@ export default async function ConfigurationLocations({
       </div>
       <LocationsTable 
         locations={locations}
-        sortByNameUrl={sortingUrl('name')}
-        sortByIdUrl={sortingUrl('id')}
-        sortByVersionUrl={sortingUrl('version')}
-        sortByCreatedUrl={sortingUrl('created_at')}
-        sortByUpdatedUrl={sortingUrl('updated_at')}
+        sortingUrls={sortingUrls}
       />
       <SsrPagination
         className="mt-4"

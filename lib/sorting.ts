@@ -37,33 +37,6 @@ export function useSorting(input: UseSortingInput) {
 }
 
 
-export type UseSortingUrlInput = {
-  baseUrl?: string;
-  searchParams?: Record<string, string>;
-  sortingResult?: SortingResult;
-}
-
-export function useSortingUrl({
-  baseUrl = '',
-  searchParams = {},
-  sortingResult = {},
-}: UseSortingUrlInput) {
-  return (sortKey: string) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (sortKey) {
-      const newSortDirection = sortingResult.sortKey === sortKey 
-        ? sortingResult.sortDirection === 'asc' ? 'desc' : 'asc'
-        : 'asc';
-
-      newSearchParams.set('sortKey', sortKey);
-      newSearchParams.set('sortDirection', newSortDirection);
-    }
-
-    return `${baseUrl}?${newSearchParams.toString()}`;
-  }
-}
-
-
 export type UseSortingUrlsInput = {
   keys: string[];
   baseUrl?: string;
