@@ -1,11 +1,12 @@
-import { Event } from "@/lib/events/types";
+import { Event, EventWithUsers } from "@/lib/events/types";
 import { formatDateString } from "@/lib/utils/utils";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { EventDetailsButton } from "./event-details-button";
 
 export type EventsTableProps = React.ComponentProps<typeof Table> & {
-  events?: Event[];
+  events?: EventWithUsers[];
+  baseUrl?: string;
   sortingUrls?: Partial<Record<keyof Event, string>>;
 };
 
@@ -89,9 +90,7 @@ export function EventsTable(props: EventsTableProps) {
               {event.event_type}
             </TableCell>
             <TableCell>
-              <Button variant="secondary">
-                View Data
-              </Button>
+              <EventDetailsButton eventId={event.event_id} />
             </TableCell>
           </TableRow>
         ))}

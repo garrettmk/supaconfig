@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { GetEventStreamInput, GetEventStreamResult, getEventStream } from "./actions";
+import { GetEventResult, GetEventStreamInput, GetEventStreamResult, getEvent, getEventStream } from "./actions";
 import { QueryClient, UseQueryOptions, useQuery } from "@tanstack/react-query";
+
+/**
+ * Get the event stream for a particular aggregate
+ * 
+ * @param defaultValue 
+ * @returns 
+ */
 
 export function useEventsQueryInput(defaultValue?: GetEventStreamInput) {
   const [input, setInput] = useState<GetEventStreamInput>(defaultValue ?? { 
@@ -55,5 +62,32 @@ export function useEventsQuery(input: UseEventsQueryInput) {
 useEventsQuery.invalidate = (queryClient: QueryClient, aggregateId: string) => {
   queryClient.invalidateQueries({
     queryKey: aggregateId ? ['events', aggregateId] : ['events']
+  });
+}
+
+
+
+/**
+ * Get a single event by its ID
+ */
+
+
+export type UseEventQueryInput = Omit<UseQueryOptions<GetEventResult>, 'queryKey' | 'queryFn'> & {
+  eventId: string;
+}
+
+export function useEventQuery(input: UseEventQueryInput) {
+  const { eventId, ...useQueryOptions } = input;
+
+  return useQuery({
+    queryKey: ['event', eventId],
+    queryFn: async () => getEvent({ eventId }),
+    ...useQueryOptions
+  });
+}
+
+useEventQuery.invalidate = (queryClient: QueryClient, eventId: string) => {
+  queryClient.invalidateQueries({
+    queryKey: eventId ? ['event', eventId] : ['event']
   });
 }

@@ -1,8 +1,10 @@
 import { EventsTable } from "@/components/events-table";
+import { EventDetailsDrawer } from "@/components/events-table/event-details-drawer";
 import { SsrPagination } from "@/components/ssr-pagination";
 import { getEventStream } from "@/lib/events/actions";
 import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
 import { pickSortingResult, useSortingSearchParams, useSortingUrls } from "@/lib/sorting";
+import { getFromSearchParams } from "@/lib/utils/url";
 
 export default async function LocationEvents({
   params: {
@@ -42,6 +44,8 @@ export default async function LocationEvents({
     sortingResult
   });
 
+  const detailsId = getFromSearchParams(searchParams, 'details');
+
   return (
     <section>
       <EventsTable
@@ -51,6 +55,9 @@ export default async function LocationEvents({
       <SsrPagination
         className="mt-4"
         {...ssrPagination}
+      />
+      <EventDetailsDrawer
+        eventId={detailsId}
       />
     </section>
   );

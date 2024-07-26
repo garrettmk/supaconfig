@@ -9,7 +9,7 @@ export function getFromSearchParams(searchParams: URLSearchParams | ReadonlyURLS
 
 export type MakeUrlInput = {
   baseUrl?: string;
-  searchParams?: Record<string, string>;
+  searchParams?: Record<string, string> | URLSearchParams | ReadonlyURLSearchParams;
   set?: Record<string, string | number>;
   delete?: string[];
 }

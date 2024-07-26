@@ -1,18 +1,22 @@
 'use server';
 
+import { EventWithUsers } from "@/lib/events/types";
 import { type PaginationInput, type PaginationResult } from "@/lib/pagination";
-import { type Event } from "@/lib/events/types";
 import { createClient } from "@/lib/supabase/server";
 import { PostgrestError } from "@supabase/supabase-js";
 import { SortingInput, SortingResult } from "../sorting";
 
+
+/**
+ * Get the event stream for a given aggregate.
+ */
 
 export type GetEventStreamInput = PaginationInput & SortingInput & {
   aggregateId: string;
 }
 
 export type GetEventStreamResult = PaginationResult & SortingResult & {
-  data?: Event[];
+  data?: EventWithUsers[];
   error?: PostgrestError; 
 };
 
@@ -44,5 +48,38 @@ export async function getEventStream(input: GetEventStreamInput): Promise<GetEve
     limit,
     sortKey,
     sortDirection
+  };
+}
+
+
+/**
+ * Get a single event by its ID.
+ */
+
+export type GetEventInput = {
+  eventId: string;
+}
+
+export type GetEventResult = {
+  data?: EventWithUsers;
+  error?: PostgrestError;
+};
+
+export async function getEvent(input: GetEventInput): Promise<GetEventResult> {
+  const { eventId } = input;
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('events')
+    .select('*, created_by (id, name)')
+    .eq('event_id', eventId)
+    .single();
+
+  if (error)
+    throw new Error(error.details ?? error.message, { cause: error });
+
+  return {
+    data: data ?? undefined,
+    error: error ?? undefined
   };
 }
