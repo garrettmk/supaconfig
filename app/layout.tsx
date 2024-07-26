@@ -2,6 +2,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { createClient } from '@/lib/supabase/server';
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
+import NextTopLoader from 'nextjs-toploader';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -9,8 +10,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Supaconfig",
+  description: "An app configuration tool built with Supabase",
 };
 
 export default async function RootLayout({
@@ -24,6 +25,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
+        <NextTopLoader
+          showSpinner={false}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

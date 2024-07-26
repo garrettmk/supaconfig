@@ -34,6 +34,7 @@
     "geist": "^1.2.1",
     "next": "latest",
     "next-themes": "^0.2.1",
+    "nextjs-toploader": "^1.6.12",
     "postcss": "8.4.33",
     "react": "18.2.0",
     "react-aria": "^3.32.1",

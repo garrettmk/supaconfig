@@ -47,7 +47,9 @@ export function pick<T extends object, K extends keyof T>(from: T, fields: K[]) 
   );
 }
 
-export function formatDateString(str: string): string {
+export function formatDateString(str: string | null | undefined): string {
+  if (!str) return 'N/A';
+  
   const date = new Date(str);
 
   return date.toLocaleString();
