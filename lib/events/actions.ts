@@ -4,7 +4,44 @@ import { EventWithUsers } from "@/lib/events/types";
 import { type PaginationInput, type PaginationResult } from "@/lib/pagination";
 import { createClient } from "@/lib/supabase/server";
 import { PostgrestError } from "@supabase/supabase-js";
-import { SortingInput, SortingResult } from "../sorting";
+import { SortingInput, SortingResult } from "@/lib/sorting/server";
+
+/**
+ * Get a list of events.
+ */
+
+export type GetEventsInput = PaginationInput & SortingInput & {
+
+};
+
+export type GetEventsResult = PaginationResult & SortingResult & {
+  data?: EventWithUsers[];
+  error?: PostgrestError;
+};
+
+export async function getEvents(input: GetEventsInput): Promise<GetEventsResult> {
+  const { offset = 0, limit = 10, sortKey = 'created_at', sortDirection = 'desc' } = input;
+
+  const supabase = createClient();
+  const { data, error, count } = await supabase
+    .from('events')
+    .select('*, created_by (id, name)', { count: 'exact' })
+    .order(sortKey, { ascending: sortDirection === 'asc' })
+    .range(offset, offset + limit - 1);
+
+  if (error)
+    throw new Error(error.details ?? error.message, { cause: error });
+
+  return {
+    data: data ?? undefined,
+    error: error ?? undefined,
+    count: count ?? 0,
+    offset,
+    limit,
+    sortKey,
+    sortDirection
+  };
+}
 
 
 /**
@@ -57,7 +94,7 @@ export async function getEventStream(input: GetEventStreamInput): Promise<GetEve
  */
 
 export type GetEventInput = {
-  eventId: string;
+  eventId: EventWithUsers['event_id'];
 }
 
 export type GetEventResult = {

@@ -39,12 +39,20 @@ export function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
-export function pick<T extends object, K extends keyof T>(from: T, fields: K[]) {
+export function pick<T extends object, K extends keyof T>(from: T, fields: K[]): Pick<T, K> {
   return Object.fromEntries(
     Object
       .entries(from)
       .filter(([key, value]) => fields.includes(key as K))
-  );
+  ) as Pick<T, K>;
+}
+
+export function omit<T extends object, K extends keyof T>(from: T, fields: K[]): Omit<T, K> {
+  return Object.fromEntries(
+    Object
+      .entries(from)
+      .filter(([key, value]) => !fields.includes(key as K))
+  ) as Omit<T, K>;
 }
 
 export function formatDateString(str: string | null | undefined): string {

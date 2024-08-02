@@ -1,4 +1,4 @@
-import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
+import { HomeIcon, LightningBoltIcon, PersonIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
 export function Sidebar() {
@@ -14,6 +14,11 @@ export function Sidebar() {
           Icon={HomeIcon}
           label="Locations"
           href="/configuration/locations"
+        />
+        <SidebarItem
+          Icon={LightningBoltIcon}
+          label="Events"
+          href="/configuration/events"
         />
       </ul>
     </nav>
