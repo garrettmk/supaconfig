@@ -1,14 +1,14 @@
-import { Sidebar } from "@/components/sidebar";
-import { UserMenuButton } from "@/components/user-menu-button";
-import { createClient } from "@/lib/supabase/server";
+import { Sidebar } from "@/app/configuration/(components)/sidebar";
+import { UserMenuButton } from "@/app/configuration/(components)/user-menu-button";
+import { createServerClient } from "@/app/(lib)/supabase/server";
 import { GearIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Providers } from "./providers";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/app/(components)/toaster";
 import { redirect } from "next/navigation";
 
 export default async function ConfigurationLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
+  const supabase = createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user)

@@ -1,5 +1,5 @@
-import { ThemeProvider } from '@/components/theme-provider';
-import { createClient } from '@/lib/supabase/server';
+import { ThemeProvider } from '@/app/(components)/theme-provider';
+import { createServerClient } from '@/app/(lib)/supabase/server';
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
@@ -19,7 +19,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createClient();
+  const supabase = createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   return (

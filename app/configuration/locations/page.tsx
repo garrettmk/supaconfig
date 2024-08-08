@@ -1,8 +1,8 @@
-import { SsrPagination } from "@/components/ssr-pagination";
-import { getLocations } from "@/lib/locations/actions";
-import { PaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
-import { SortingResult, useSortingSearchParams, useSortingUrls } from "@/lib/sorting";
-import { pick } from "@/lib/utils/utils";
+import { SsrPagination } from "@/app/(components)/ssr-pagination";
+import { getLocations } from "@/app/configuration/locations/(lib)/actions";
+import { PaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/app/(lib)/pagination";
+import { SortingResult, useSortingSearchParams, useSortingUrls } from "@/app/(lib)/sorting";
+import { pick } from "@/app/(lib)/utils/utils";
 import { CreateLocationDrawer } from "./(components)/create-location-drawer";
 import { LocationsTable } from "./(components)/locations-table";
 

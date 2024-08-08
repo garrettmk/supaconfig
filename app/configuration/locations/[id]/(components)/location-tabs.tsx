@@ -1,6 +1,6 @@
 'use client';
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/app/(components)/tabs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

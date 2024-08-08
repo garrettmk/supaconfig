@@ -1,24 +1,24 @@
 'use client';
 
-import { SubmitButton } from "@/components/submit-button";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { TimeInput } from "@/components/ui/time-input";
-import { useToast } from "@/components/ui/use-toast";
-import { type SetLocationHoursInput, setLocationHours } from "@/lib/locations/actions";
-import { type DailyHours, type Location } from "@/lib/locations/types";
-import { Json } from "@/lib/supabase/types";
-import { isEmpty } from "@/lib/utils/utils";
+import { SubmitButton } from "@/app/(components)/submit-button";
+import { Button } from "@/app/(components)/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/(components)/card";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/app/(components)/form";
+import { Input } from "@/app/(components)/input";
+import { Switch } from "@/app/(components)/switch";
+import { TimeInput } from "@/app/(components)/time-input";
+import { useToast } from "@/app/(components)/use-toast";
+import { type SetLocationHoursInput, setLocationHours } from "@/app/configuration/locations/(lib)/actions";
+import { type DailyHours, type Location } from "@/app/configuration/locations/(lib)/types";
+import { Json } from "@/app/(lib)/supabase/types";
+import { isEmpty } from "@/app/(lib)/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Time } from '@internationalized/date';
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Fragment } from "react";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { daysInWeek } from "../(utils)/hours";
+import { daysInWeek } from "../(lib)/hours";
 
 
 export const dailyHoursFormSchema = z.object({

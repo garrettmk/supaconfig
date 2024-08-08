@@ -1,7 +1,7 @@
-import { CopyToClipboardButton } from "@/components/copy-button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { type Location } from "@/lib/locations/types";
-import { formatDateString } from "@/lib/utils/utils";
+import { CopyToClipboardButton } from "@/app/(components)/copy-button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/(components)/table";
+import { type Location } from "@/app/configuration/locations/(lib)/types";
+import { formatDateString } from "@/app/(lib)/utils/utils";
 import Link from "next/link";
 
 export type LocationsTableProps = React.ComponentProps<typeof Table> & {

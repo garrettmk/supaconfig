@@ -1,10 +1,10 @@
-import { EventsTable } from "@/components/events-table";
-import { EventDetailsDrawer } from "@/components/events-table/event-details-drawer";
-import { SsrPagination } from "@/components/ssr-pagination";
-import { getEventStream } from "@/lib/events/actions";
-import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
-import { pickSortingResult, useSortingSearchParams, useSortingUrls } from "@/lib/sorting";
-import { getFromSearchParams } from "@/lib/utils/url";
+import { EventsTable } from "@/app/configuration/locations/[id]/events/(components)/events-table";
+import { EventDetailsDrawer } from "@/app/configuration/locations/[id]/events/(components)/events-table/event-details-drawer";
+import { SsrPagination } from "@/app/(components)/ssr-pagination";
+import { getEventStream } from "@/app/configuration/events/(lib)/actions";
+import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/app/(lib)/pagination";
+import { pickSortingResult, useSortingSearchParams, useSortingUrls } from "@/app/(lib)/sorting";
+import { getFromSearchParams } from "@/app/(lib)/utils/url";
 
 export default async function LocationEvents({
   params: {

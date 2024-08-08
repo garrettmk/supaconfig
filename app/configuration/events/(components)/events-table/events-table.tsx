@@ -1,7 +1,7 @@
-import { Event, EventWithUsers } from "@/lib/events/types";
-import { formatDateString } from "@/lib/utils/utils";
+import { Event, EventWithUsers } from "@/app/configuration/events/(lib)/types";
+import { formatDateString } from "@/app/(lib)/utils/utils";
 import Link from "next/link";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/(components)/table";
 import { EventDetailsButton } from "./event-details-button";
 
 export type EventsTableProps = React.ComponentProps<typeof Table> & {

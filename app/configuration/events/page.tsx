@@ -1,8 +1,8 @@
-import { getEvents } from "@/lib/events/actions";
-import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/lib/pagination";
-import { useSortingSearchParams, useSortingUrls, pickSortingResult } from "@/lib/sorting";
+import { getEvents } from "@/app/configuration/events/(lib)/actions";
+import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/app/(lib)/pagination";
+import { useSortingSearchParams, useSortingUrls, pickSortingResult } from "@/app/(lib)/sorting";
 import { EventsTable } from "./(components)/events-table";
-import { SsrPagination } from "@/components/ssr-pagination";
+import { SsrPagination } from "@/app/(components)/ssr-pagination";
 
 export default async function ConfigurationEventsPage({
   searchParams

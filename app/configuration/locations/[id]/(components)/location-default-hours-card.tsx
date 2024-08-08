@@ -1,21 +1,21 @@
 'use client';
 
-import { SubmitButton } from "@/components/submit-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { TimeInput } from "@/components/ui/time-input";
-import { useToast } from "@/components/ui/use-toast";
-import { setLocationDefaultHours } from "@/lib/locations/actions";
-import { type DailyHours, type Location, type WeeklyHours } from "@/lib/locations/types";
-import { capitalize } from "@/lib/utils/utils";
+import { SubmitButton } from "@/app/(components)/submit-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/(components)/card";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/app/(components)/form";
+import { Input } from "@/app/(components)/input";
+import { Switch } from "@/app/(components)/switch";
+import { TimeInput } from "@/app/(components)/time-input";
+import { useToast } from "@/app/(components)/use-toast";
+import { setLocationDefaultHours } from "@/app/configuration/locations/(lib)/actions";
+import { type DailyHours, type Location, type WeeklyHours } from "@/app/configuration/locations/(lib)/types";
+import { capitalize } from "@/app/(lib)/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Time } from '@internationalized/date';
 import { Fragment } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { daysInWeek } from "../(utils)/hours";
+import { daysInWeek } from "@/app/configuration/locations/[id]/(lib)/hours";
 
 const dailyHoursFormSchema = z.object({
   isOpen: z.boolean(),

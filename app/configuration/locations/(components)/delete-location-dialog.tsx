@@ -1,11 +1,11 @@
 "use client";
 
-import { Spinner } from "@/components/spinner";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
-import { useLocationDeleteMutation } from "@/lib/locations/queries";
-import { type Location } from "@/lib/locations/types";
+import { Spinner } from "@/app/(components)/spinner";
+import { Button } from "@/app/(components)/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/app/(components)/dialog";
+import { useToast } from "@/app/(components)/use-toast";
+import { useLocationDeleteMutation } from "@/app/configuration/locations/(lib)/queries";
+import { type Location } from "@/app/configuration/locations/(lib)/types";
 
 export type DeleteLocationDialogProps = {
   isOpen?: boolean;

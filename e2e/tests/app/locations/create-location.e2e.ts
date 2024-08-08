@@ -1,5 +1,5 @@
 import { signedInTest, expect } from "@/e2e/setup/signed-in-test-setup";
-import { asyncTimeout } from "@/lib/utils/utils";
+import { asyncTimeout } from "@/app/(lib)/utils/utils";
 import { Locator } from '@playwright/test';
 
 

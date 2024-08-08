@@ -1,6 +1,6 @@
-import { getLocation } from "@/lib/locations/actions";
+import { getLocation } from "@/app/configuration/locations/(lib)/actions";
 import Link from "next/link";
-import { LocationTabs } from "./(components)/location-tabs";
+import { LocationTabs } from "@/app/configuration/locations/[id]/(components)/location-tabs";
 
 export default async function LocationLayout({
   children,

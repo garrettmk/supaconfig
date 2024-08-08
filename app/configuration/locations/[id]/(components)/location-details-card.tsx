@@ -1,10 +1,10 @@
 "use client";
 
-import { CopyToClipboardButton } from "@/components/copy-button";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
-import { type Location } from "@/lib/locations/types";
+import { CopyToClipboardButton } from "@/app/(components)/copy-button";
+import { Button } from "@/app/(components)/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/(components)/card";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@/app/(components)/table";
+import { type Location } from "@/app/configuration/locations/(lib)/types";
 import { useState } from "react";
 import { EditLocationDrawer } from "../../(components)/edit-location-drawer";
 
