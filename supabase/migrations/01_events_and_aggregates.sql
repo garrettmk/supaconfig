@@ -6,6 +6,11 @@ CREATE type AGG_TYPE as ENUM (
   'location'
 );
 
+CREATE type AGG_STATUS as ENUM (
+  'active',
+  'deleted'
+);
+
 
 /*
   Create the events table
@@ -40,6 +45,7 @@ CREATE TABLE public.aggregates (
   type AGG_TYPE NOT NULL,
   version_number INTEGER NOT NULL,
   data JSONB NOT NULL,
+  status AGG_STATUS NOT NULL DEFAULT 'active',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   created_by UUID REFERENCES public.users(id),
@@ -137,6 +143,7 @@ BEGIN
       event.aggregate_type as type,
       event.version_number, 
       event.event_data as data,
+      'active' as status,
       event.created_at as created_at,
       event.created_at as updated_at,
       event.created_by as created_by,
@@ -149,7 +156,10 @@ BEGIN
     new_aggregate.updated_at := event.created_at;
     new_aggregate.updated_by := event.created_by;
   ELSEIF event.event_type = 'delete' THEN
-    new_aggregate := NULL;
+    new_aggregate.version_number := event.version_number;
+    new_aggregate.status := 'deleted';
+    new_aggregate.updated_at := event.created_at;
+    new_aggregate.updated_by := event.created_by;
   ELSE
     RAISE EXCEPTION 'Unknown event type: %', event.event_type;
   END IF;
@@ -239,7 +249,8 @@ BEGIN
         id, 
         type, 
         version_number, 
-        data, 
+        data,
+        status,
         created_at, 
         updated_at, 
         created_by, 
@@ -252,7 +263,15 @@ BEGIN
     IF NOT aggregate_exists THEN
       RAISE EXCEPTION 'Aggregate does not exist';
     ELSE
-      DELETE FROM public.aggregates WHERE id = NEW.aggregate_id;
+      UPDATE 
+        public.aggregates
+      SET
+        version_number = NEW.version_number,
+        status = 'deleted',
+        updated_at = NEW.created_at,
+        updated_by = NEW.created_by
+      WHERE 
+        id = NEW.aggregate_id;
     END IF;
 
   ELSE

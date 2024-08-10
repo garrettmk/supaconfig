@@ -15,6 +15,7 @@ export type Database = {
           created_by: string | null
           data: Json
           id: string
+          status: Database["public"]["Enums"]["agg_status"]
           type: Database["public"]["Enums"]["agg_type"]
           updated_at: string
           updated_by: string | null
@@ -25,6 +26,7 @@ export type Database = {
           created_by?: string | null
           data: Json
           id: string
+          status?: Database["public"]["Enums"]["agg_status"]
           type: Database["public"]["Enums"]["agg_type"]
           updated_at?: string
           updated_by?: string | null
@@ -35,6 +37,7 @@ export type Database = {
           created_by?: string | null
           data?: Json
           id?: string
+          status?: Database["public"]["Enums"]["agg_status"]
           type?: Database["public"]["Enums"]["agg_type"]
           updated_at?: string
           updated_by?: string | null
@@ -190,6 +193,7 @@ export type Database = {
           created_by: string | null
           data: Json
           id: string
+          status: Database["public"]["Enums"]["agg_status"]
           type: Database["public"]["Enums"]["agg_type"]
           updated_at: string
           updated_by: string | null
@@ -213,6 +217,7 @@ export type Database = {
           created_by: string | null
           data: Json
           id: string
+          status: Database["public"]["Enums"]["agg_status"]
           type: Database["public"]["Enums"]["agg_type"]
           updated_at: string
           updated_by: string | null
@@ -308,6 +313,7 @@ export type Database = {
       }
     }
     Enums: {
+      agg_status: "active" | "deleted"
       agg_type: "location"
     }
     CompositeTypes: {
