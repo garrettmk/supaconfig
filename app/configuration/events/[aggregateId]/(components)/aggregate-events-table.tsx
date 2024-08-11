@@ -2,19 +2,49 @@ import { Event, EventWithUsers } from "@/app/configuration/events/(lib)/types";
 import { formatDateString } from "@/app/(lib)/utils/utils";
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/(components)/table";
-import { EventDetailsButton } from "./event-details-button";
+import { EventDetailsButton } from "../../(components)/events-table/event-details-button";
+import { usePaginationSearchParams, pickPaginationResult, usePaginationUrls } from "@/app/(lib)/pagination";
+import { useSortingSearchParams, pickSortingResult, useSortingUrls } from "@/app/(lib)/sorting";
+import { getAggregateEvents } from "../(lib)/actions";
+import { SsrPagination } from "@/app/(components)/ssr-pagination";
+import { Button } from "@/app/(components)/button";
+import { makeUrl } from "@/app/(lib)/utils/url";
 
-export type EventsTableProps = React.ComponentProps<typeof Table> & {
-  events?: EventWithUsers[];
-  sortingUrls?: Partial<Record<keyof Event, string>>;
+export type AggregateEventsTableProps = React.ComponentProps<typeof Table> & {
+  aggregateId: EventWithUsers['aggregate_id'];
+  searchParams?: Record<string, string>;
 };
 
-export function EventsTable(props: EventsTableProps) {
+export async function AggregateEventsTable(props: AggregateEventsTableProps) {
   const {
-    events = [],
-    sortingUrls,
+    aggregateId,
+    searchParams = {},
     ...tableProps
   } = props;
+
+  const paginationInput = usePaginationSearchParams(searchParams);
+  const sortingInput = useSortingSearchParams(searchParams);
+
+  const result = await getAggregateEvents({ aggregateId, ...paginationInput, ...sortingInput });
+  const events = result.data;
+  const paginationResult = pickPaginationResult(result);
+  const sortingResult = pickSortingResult(result);
+
+  const sortingUrls = useSortingUrls({
+    keys: ['event_id', 'version_number', 'created_at', 'created_by', 'event_type'],
+    searchParams,
+    sortingResult
+  });
+
+  const paginationUrls = usePaginationUrls({
+    searchParams,
+    paginationResult
+  });
+
+  const makeDetailsUrl = (event: Pick<Event, 'event_id'>) => makeUrl({
+    searchParams,
+    set: { details: event.event_id }
+  })
 
   const SortableTableHead = ({ url, children, ...props }: React.ComponentProps<typeof TableHead> & { url?: string }) => (
     <TableHead {...props}>
@@ -29,17 +59,12 @@ export function EventsTable(props: EventsTableProps) {
   );
 
   return (
+    <>
     <Table {...tableProps}>
       <TableHeader>
         <TableRow>
           <SortableTableHead url={sortingUrls?.event_id}>
             Event ID
-          </SortableTableHead>
-          <SortableTableHead url={sortingUrls?.aggregate_id}>
-            Aggregate ID
-          </SortableTableHead>
-          <SortableTableHead url={sortingUrls?.aggregate_type}>
-            Aggregate Type
           </SortableTableHead>
           <SortableTableHead url={sortingUrls?.version_number}>
             Version Number
@@ -59,21 +84,10 @@ export function EventsTable(props: EventsTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {events.map(event => (
+        {events?.map(event => (
           <TableRow key={event.event_id}>
             <TableCell>
               {event.event_id}
-            </TableCell>
-            <TableCell>
-              <Link
-                className="hover:underline"
-                href={`/configuration/events/${event.aggregate_id}`}
-              >
-                {event.aggregate_id}
-              </Link>
-            </TableCell>
-            <TableCell>
-              {event.aggregate_type}
             </TableCell>
             <TableCell>
               {event.version_number}
@@ -88,11 +102,20 @@ export function EventsTable(props: EventsTableProps) {
               {event.event_type}
             </TableCell>
             <TableCell>
-              <EventDetailsButton eventId={event.event_id} />
+              <Link href={makeDetailsUrl(event)}>
+                <Button variant="secondary">
+                  View Details
+                </Button>
+              </Link>
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
+    <SsrPagination
+        className="mt-4"
+        {...paginationUrls}
+      />
+    </>
   );
 }
