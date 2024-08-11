@@ -55,6 +55,20 @@ export function omit<T extends object, K extends keyof T>(from: T, fields: K[]):
   ) as Omit<T, K>;
 }
 
+export function split<T extends object, K extends keyof T>(from: T, keys: K[]): [Pick<T, K>, Omit<T, K>] {
+  const picked: any = {};
+  const remainder: any = {};
+
+  Object.entries(from).map(([key, value]) => {
+    if (keys.includes(key as K))
+      picked[key] = value;
+    else
+      remainder[key] = value;
+  });
+
+  return [picked, remainder];
+}
+
 export function formatDateString(str: string | null | undefined): string {
   if (!str) return 'N/A';
   
