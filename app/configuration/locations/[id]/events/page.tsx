@@ -4,7 +4,7 @@ import { SsrPagination } from "@/app/(components)/ssr-pagination";
 import { getEventStream } from "@/app/configuration/events/(lib)/actions";
 import { pickPaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/app/(lib)/pagination";
 import { pickSortingResult, useSortingSearchParams, useSortingUrls } from "@/app/(lib)/sorting";
-import { getFromSearchParams } from "@/app/(lib)/utils/url";
+import { getFromSearchParams, parseAsString } from "@/app/(lib)/utils/search-params";
 
 export default async function LocationEvents({
   params: {
@@ -44,7 +44,9 @@ export default async function LocationEvents({
     sortingResult
   });
 
-  const detailsId = getFromSearchParams(searchParams, 'details');
+  const { details: detailsId } = getFromSearchParams(searchParams, {
+    details: parseAsString
+  });
 
   return (
     <section>

@@ -1,6 +1,7 @@
-import { getFromSearchParams, makeUrl } from "@/app/(lib)/utils/url";
+import { makeUrl } from "@/app/(lib)/utils/url";
 import { clamp, pick, range } from "@/app/(lib)/utils/utils";
 import { ReadonlyURLSearchParams } from "next/navigation";
+import { getFromSearchParams, parseAsInteger } from "@/app/(lib)/utils/search-params";
 
 /**
  * Types
@@ -32,10 +33,10 @@ export function pickPaginationResult<T extends PaginationResult>(input: T): Pagi
  * @returns PaginationInput
  */
 export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams | Record<string, string>): PaginationInput {
-  return {
-    offset: Number(getFromSearchParams(searchParams, 'offset', '0')),
-    limit: Number(getFromSearchParams(searchParams, 'limit', '10'))
-  };
+  return getFromSearchParams(searchParams, {
+    offset: parseAsInteger.withDefault(0),
+    limit: parseAsInteger.withDefault(10)
+  });
 }
 
 

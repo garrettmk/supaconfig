@@ -1,5 +1,6 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
-import { getFromSearchParams, makeUrl } from "@/app/(lib)/utils/url";
+import { getFromSearchParams, parseAsString, parseAsStringEnum } from "@/app/(lib)/utils/search-params";
+import { makeUrl } from "@/app/(lib)/utils/url";
 import { pick } from "@/app/(lib)/utils/utils";
 
 export type SortingInput = {
@@ -10,10 +11,10 @@ export type SortingInput = {
 export type SortingResult = SortingInput;
 
 export function useSortingSearchParams(searchParams: ReadonlyURLSearchParams | Record<string, string>): SortingResult {
-  return {
-    sortKey: getFromSearchParams(searchParams, 'sortKey'),
-    sortDirection: getFromSearchParams(searchParams, 'sortDirection') as 'asc' | 'desc' | undefined
-  }
+  return getFromSearchParams(searchParams, {
+    sortKey: parseAsString,
+    sortDirection: parseAsStringEnum(['asc', 'desc'])
+  });
 }
 
 export type UseSortingInput = SortingInput;

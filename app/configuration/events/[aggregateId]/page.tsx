@@ -1,4 +1,4 @@
-import { getFromSearchParams, parseAsInteger } from "@/app/(lib)/utils/url";
+import { getFromSearchParams, parseAsInteger } from "@/app/(lib)/utils/search-params";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AggregateDetails } from "./(components)/aggregate-details";
@@ -15,7 +15,9 @@ export default async function AggregateIdPage({
     aggregateId: string
   }
 }) {
-  const version = getFromSearchParams(searchParams, 'version', parseAsInteger);
+  const { version } = getFromSearchParams(searchParams, {
+    version: parseAsInteger
+  });
   
   return (
     <section className="basis-full p-12">
