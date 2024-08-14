@@ -10,7 +10,7 @@ export default async function ConfigurationLayout({ children }: { children: Reac
   const user = await getUser();
 
   if (!user)
-    return redirect('/login');
+    return redirect('/auth/login');
   
   return (
     <>

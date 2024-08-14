@@ -1,5 +1,5 @@
-import { TestUser } from '@/e2e/setup/base-setup';
-import { workerUserTest, expect } from '@/e2e/setup/worker-user-setup';
+import { TestUser } from '@/e2e/setup/base-test-setup';
+import { workerUserTest, expect } from '@/e2e/setup/worker-user-test-setup';
 import { Locator, Page } from '@playwright/test';
 
 export class LoginPage {
@@ -41,6 +41,8 @@ export const test = workerUserTest.extend<{
   emailInput: Locator;
   passwordInput: Locator;
   signInButton: Locator;
+  signUpButton: Locator;
+  signUpUserCredentials: { email: string, password: string };
 }>({
   page: async ({ browser }, use) => {
     const page = await browser.newPage({ storageState: undefined });
@@ -59,7 +61,26 @@ export const test = workerUserTest.extend<{
 
   signInButton: async ({ page }, use) => {
     await use(page.getByRole('button', { name: /sign in/i }));
-  }
+  },
+
+  signUpButton: async ({ page }, use) => {
+    await use(page.getByRole('button', { name: /sign up/i }));
+  },
+
+  signUpUserCredentials: async ({ supabase }, use) => {
+    const userCredentials = { email: 'worker@mail.com', password: 'test1234' };
+
+    await use(userCredentials);
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('name', 'worker')
+      .single();
+
+    if (user)
+      await supabase.auth.admin.deleteUser(user.id);
+  },
 });
 
 
@@ -67,7 +88,7 @@ test('should redirect to login page', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL('/auth/login');
 });
 
 test('should log in successfully', async ({ page, workerUser, emailInput, passwordInput, signInButton }) => {
@@ -76,4 +97,21 @@ test('should log in successfully', async ({ page, workerUser, emailInput, passwo
   await signInButton.click();
 
   await test.expect(page).toHaveURL('/configuration');
+});
+
+test('should create a new user', async ({ supabase, page, signUpUserCredentials, emailInput, passwordInput, signUpButton }) => {
+  await emailInput.fill(signUpUserCredentials.email);
+  await passwordInput.fill(signUpUserCredentials.password);
+  await signUpButton.click();
+
+  await test.expect(page).toHaveURL('/auth/login?message=Check email to continue sign in process');
+
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('name', 'worker')
+    .single();
+
+  await test.expect(user).not.toBeFalsy();
+  await test.expect(error).toBeFalsy();
 });

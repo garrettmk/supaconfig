@@ -16,9 +16,9 @@ export default function Login({
     const { user, error } = await signIn({ email, password });
 
     if (error)
-      return redirect("/login?message=Could not authenticate user");
+      return redirect("/auth/login?message=Could not authenticate user");
     else if (!user)
-      return redirect("/login?message=User not found");
+      return redirect("/auth/login?message=User not found");
     else
       return redirect("/configuration");
   };
@@ -32,9 +32,9 @@ export default function Login({
     const { user, error } = await signUp({ email, password });
 
     if (error)
-      return redirect(`/login?message=${error.message}`);
+      return redirect(`/auth/login?message=${error.message}`);
     else
-      return redirect("/login?message=Check email to continue sign in process");
+      return redirect("/auth/login?message=Check email to continue sign in process");
   };
 
   return (
