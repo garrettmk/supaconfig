@@ -33,12 +33,12 @@ export async function AggregateEventsTable(props: AggregateEventsTableProps) {
   const sortingUrls = useSortingUrls({
     keys: ['event_id', 'version_number', 'created_at', 'created_by', 'event_type'],
     searchParams,
-    sortingResult
+    sorting: sortingResult
   });
 
   const paginationUrls = usePaginationUrls({
     searchParams,
-    paginationResult
+    pagination: paginationResult
   });
 
   const makeDetailsUrl = (event: Pick<Event, 'event_id'>) => makeUrl({

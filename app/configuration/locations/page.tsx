@@ -25,13 +25,13 @@ export default async function ConfigurationLocations({
     keys: ['name', 'id', 'version', 'created_at', 'updated_at'],
     baseUrl: '/configuration/locations',
     searchParams,
-    sortingResult,
+    sorting: sortingResult,
   });
 
   const ssrPagination = usePaginationUrls({
     baseUrl: '/configuration/locations',
     searchParams,
-    paginationResult,
+    pagination: paginationResult,
   });
 
 

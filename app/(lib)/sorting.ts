@@ -42,7 +42,7 @@ export type UseSortingUrlsInput = {
   keys: string[];
   baseUrl?: string;
   searchParams?: Record<string, string>;
-  sortingResult?: SortingResult;
+  sorting?: SortingResult;
 }
 
 export type UseSortingUrlsResult = Record<string, string>;
@@ -51,7 +51,7 @@ export function useSortingUrls({
   keys,
   baseUrl = '',
   searchParams = {},
-  sortingResult = {},
+  sorting = {},
 }: UseSortingUrlsInput): UseSortingUrlsResult {
   return keys.reduce(
     (result, key) => {
@@ -60,8 +60,8 @@ export function useSortingUrls({
         searchParams,
         set: {
           sortKey: key,
-          sortDirection: sortingResult.sortKey === key 
-            ? sortingResult.sortDirection === 'asc' ? 'desc' : 'asc'
+          sortDirection: sorting.sortKey === key 
+            ? sorting.sortDirection === 'asc' ? 'desc' : 'asc'
             : 'asc'
         }
       });

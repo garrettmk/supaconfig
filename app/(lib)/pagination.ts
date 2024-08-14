@@ -60,7 +60,7 @@ export type UsePaginationResult = {
 };
 
 export function usePagination(input: UsePaginationInput): UsePaginationResult {
-  const { count, offset = 0, limit = 10, maxPages = 5 } = input;
+  const { count = 0, offset = 0, limit = 10, maxPages = 5 } = input;
 
   const currentPage = Math.floor(offset / limit) + 1;
   const totalPages = Math.ceil(count / limit);
@@ -110,7 +110,7 @@ export function usePagination(input: UsePaginationInput): UsePaginationResult {
 export type UsePaginationUrlsInput = {
   baseUrl?: string;
   searchParams?: Record<string, string>;
-  paginationResult: PaginationResult;
+  pagination: PaginationResult;
   maxPages?: number;
 }
 
@@ -126,7 +126,7 @@ export type UsePaginationUrlsResult = {
 export function usePaginationUrls({
   baseUrl = '',
   searchParams = {},
-  paginationResult,
+  pagination,
   maxPages = 5
 }: UsePaginationUrlsInput): UsePaginationUrlsResult {
   const {
@@ -137,7 +137,7 @@ export function usePaginationUrls({
     displayedRange, 
     displayNextEllipsis, 
     displayPreviousEllipsis
-  } = usePagination({ ...paginationResult, maxPages });
+  } = usePagination({ ...pagination, maxPages });
 
   const toHref = ({ offset = 0, limit = 10 }: PaginationInput) => makeUrl({
     baseUrl,

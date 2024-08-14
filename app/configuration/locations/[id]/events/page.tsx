@@ -33,7 +33,7 @@ export default async function LocationEvents({
   const ssrPagination = usePaginationUrls({
     baseUrl: `/configuration/locations/${id}/events`,
     searchParams,
-    paginationResult,
+    pagination: paginationResult,
     maxPages: 3
   });
 
@@ -41,7 +41,7 @@ export default async function LocationEvents({
     keys: ['event_id', 'version_number', 'created_at', 'created_by', 'event_type'],
     baseUrl: `/configuration/locations/${id}/events`,
     searchParams,
-    sortingResult
+    sorting: sortingResult
   });
 
   const { details: detailsId } = getFromSearchParams(searchParams, {

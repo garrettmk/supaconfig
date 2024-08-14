@@ -14,9 +14,10 @@ export type GetEventsInput = PaginationInput & SortingInput & {
 
 };
 
-export type GetEventsResult = PaginationResult & SortingResult & {
-  data?: EventWithUsers[];
-  error?: PostgrestError;
+export type GetEventsResult = {
+  data: EventWithUsers[];
+  pagination: PaginationResult;
+  sorting: SortingResult;
 };
 
 export async function getEvents(input: GetEventsInput): Promise<GetEventsResult> {
@@ -33,13 +34,16 @@ export async function getEvents(input: GetEventsInput): Promise<GetEventsResult>
     throw new Error(error.details ?? error.message, { cause: error });
 
   return {
-    data: data ?? undefined,
-    error: error ?? undefined,
-    count: count ?? 0,
-    offset,
-    limit,
-    sortKey,
-    sortDirection
+    data,
+    pagination: {
+      count: count ?? 0,
+      offset,
+      limit
+    },
+    sorting:{
+      sortKey,
+      sortDirection
+    }
   };
 }
 
