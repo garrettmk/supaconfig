@@ -1,6 +1,5 @@
-import { createServerClient } from "@/app/(lib)/supabase/server";
+import { signIn, signUp } from "@/app/auth/(lib)/actions";
 import { GearIcon } from "@radix-ui/react-icons";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default function Login({
@@ -8,46 +7,34 @@ export default function Login({
 }: {
   searchParams: { message: string };
 }) {
-  const signIn = async (formData: FormData) => {
+  const signInAction = async (formData: FormData) => {
     "use server";
 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const supabase = createServerClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { user, error } = await signIn({ email, password });
 
-    if (error) {
+    if (error)
       return redirect("/login?message=Could not authenticate user");
-    }
-
-    return redirect("/configuration");
+    else if (!user)
+      return redirect("/login?message=User not found");
+    else
+      return redirect("/configuration");
   };
 
-  const signUp = async (formData: FormData) => {
+  const signUpAction = async (formData: FormData) => {
     "use server";
 
-    const origin = headers().get("origin");
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const supabase = createServerClient();
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
-    });
+    const { user, error } = await signUp({ email, password });
 
-    if (error) {
-      return redirect("/login?message=Could not authenticate user");
-    }
-
-    return redirect("/login?message=Check email to continue sign in process");
+    if (error)
+      return redirect(`/login?message=${error.message}`);
+    else
+      return redirect("/login?message=Check email to continue sign in process");
   };
 
   return (
@@ -58,7 +45,7 @@ export default function Login({
       </div>
       <form
         className="animate-in flex flex-col w-full justify-center gap-2 text-foreground"
-        action={signIn}
+        action={signInAction}
       >
         <label className="text-md" htmlFor="email">
           Email
@@ -85,7 +72,7 @@ export default function Login({
           Sign In
         </button>
         <button
-          formAction={signUp}
+          formAction={signUpAction}
           className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
         >
           Sign Up
