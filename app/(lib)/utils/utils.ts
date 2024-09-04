@@ -69,6 +69,11 @@ export function split<T extends object, K extends keyof T>(from: T, keys: K[]): 
   return [picked, remainder];
 }
 
+export function has<T extends object, K extends keyof T>(obj: T, key: K | K[]): boolean {
+  const keys = Array.isArray(key) ? key : [key];
+  return keys.every(k => obj.hasOwnProperty(k));
+}
+
 export function formatDateString(str: string | null | undefined): string {
   if (!str) return 'N/A';
   

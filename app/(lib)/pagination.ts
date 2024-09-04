@@ -34,8 +34,8 @@ export function pickPaginationResult<T extends PaginationResult>(input: T): Pagi
  */
 export function usePaginationSearchParams(searchParams: ReadonlyURLSearchParams | Record<string, string>): PaginationInput {
   return getFromSearchParams(searchParams, {
-    offset: parseAsInteger.withDefault(0),
-    limit: parseAsInteger.withDefault(10)
+    offset: parseAsInteger,
+    limit: parseAsInteger
   });
 }
 
@@ -109,7 +109,7 @@ export function usePagination(input: UsePaginationInput): UsePaginationResult {
 
 export type UsePaginationUrlsInput = {
   baseUrl?: string;
-  searchParams?: Record<string, string>;
+  searchParams?: Record<string, string> | ReadonlyURLSearchParams;
   pagination: PaginationResult;
   maxPages?: number;
 }
