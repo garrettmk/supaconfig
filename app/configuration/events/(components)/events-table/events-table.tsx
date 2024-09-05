@@ -1,16 +1,16 @@
 'use client';
 
 import { DataTable, DataTableColumn, DataTableProps, useTablePaginationNavigation, useTableSortingNavigation } from "@/app/(components)/data-table";
-import { formatDateString } from "@/app/(lib)/utils/utils";
 import { GetEventsResult } from "@/app/configuration/events/(lib)/actions";
-import { type EventWithUsers } from "@/app/configuration/events/(lib)/types";
+import { User, type EventWithUsers } from "@/app/configuration/events/(lib)/types";
+import { DateStringCell, UUIDCell } from "@/app/(components)/data-table/cells";
 
 
 const columns: DataTableColumn<EventWithUsers>[] = [
   {
     accessorKey: 'event_id',
     header: 'Event ID',
-    enableSorting: true
+    enableSorting: true,
   },
   {
     accessorKey: 'event_type',
@@ -25,7 +25,8 @@ const columns: DataTableColumn<EventWithUsers>[] = [
   {
     accessorKey: 'aggregate_id',
     header: 'Aggregate ID',
-    enableSorting: true
+    enableSorting: true,
+    cell: ({ getValue }) => <UUIDCell value={getValue() as string} />
   },
   {
     accessorKey: 'version_number',
@@ -36,12 +37,13 @@ const columns: DataTableColumn<EventWithUsers>[] = [
     accessorKey: 'created_at',
     header: 'Created At',
     enableSorting: true,
-    cell: ({ getValue }) => formatDateString(getValue() as string)
+    cell: ({ getValue }) => <DateStringCell value={getValue() as string} />
   },
   {
     accessorKey: 'created_by',
     header: 'Created By',
-    enableSorting: true
+    enableSorting: true,
+    cell: ({ getValue }) => (getValue() as User | null)?.name
   }
 ];
 
