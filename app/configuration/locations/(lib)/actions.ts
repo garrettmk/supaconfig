@@ -36,8 +36,10 @@ export async function getLocation(input: GetLocationInput): Promise<GetLocationR
 
 export type GetLocationsInput = PaginationInput & SortingInput;
 
-export type GetLocationsResult = PaginationResult & SortingResult & {
+export type GetLocationsResult = {
   data: Location[];
+  sorting: SortingResult;
+  pagination: PaginationResult;
 };
 
 export async function getLocations(input: GetLocationsInput): Promise<GetLocationsResult> {
@@ -55,11 +57,15 @@ export async function getLocations(input: GetLocationsInput): Promise<GetLocatio
 
   return {
     data,
-    count: count ?? 0,
-    offset,
-    limit,
-    sortKey,
-    sortDirection
+    sorting: {
+      sortKey,
+      sortDirection
+    },
+    pagination: {
+      count: count ?? 0,
+      offset,
+      limit
+    }
   };
 }
 

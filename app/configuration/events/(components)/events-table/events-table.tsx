@@ -59,22 +59,20 @@ export function EventsTable(props: EventsTableProps) {
   const [paginationState, setPaginationState] = useTablePaginationNavigation(pagination);
 
   return (
-    <div>
-      <DataTable
-        data={data}
-        manualSorting
-        manualPagination
-        columns={columns}
-        pageCount={Math.ceil(pagination.count / pagination.limit)}
-        onSortingChange={setSortingState}
-        onPaginationChange={setPaginationState}
-        state={{
-          sorting: sortingState,
-          pagination: paginationState
-        }}
-        {...tableProps}
-      />
-    </div>
+    <DataTable
+      data={data}
+      manualSorting
+      manualPagination
+      columns={columns}
+      pageCount={Math.ceil(pagination.count / pagination.limit)}
+      onSortingChange={setSortingState}
+      onPaginationChange={setPaginationState}
+      state={{
+        sorting: sortingState,
+        pagination: paginationState
+      }}
+      {...tableProps}
+    />
   );
 }
 

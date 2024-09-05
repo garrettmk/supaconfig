@@ -5,6 +5,7 @@ import { UserMenuButton } from "@/app/configuration/(components)/user-menu-butto
 import { GearIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Providers } from "./providers";
 
 export default async function ConfigurationLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
@@ -13,7 +14,7 @@ export default async function ConfigurationLayout({ children }: { children: Reac
     return redirect('/auth/login');
   
   return (
-    <>
+    <Providers>
       <div vaul-drawer-wrapper="">
         <nav className="w-full h-16 px-16 flex items-center justify-between border-b border-b-foreground/10">
           <Link href="/" className='font-extrabold text-2xl'>
@@ -28,6 +29,6 @@ export default async function ConfigurationLayout({ children }: { children: Reac
         </main>
       </div>
       <Toaster/>
-    </>
+    </Providers>
   );
 }

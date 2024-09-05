@@ -1,101 +1,66 @@
-import { CopyToClipboardButton } from "@/app/(components)/copy-button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/(components)/table";
-import { type Location } from "@/app/configuration/locations/(lib)/types";
-import { formatDateString } from "@/app/(lib)/utils/utils";
-import Link from "next/link";
+'use client';
 
-export type LocationsTableProps = React.ComponentProps<typeof Table> & {
-  locations?: Location[];
-  sortingUrls?: Partial<Record<keyof Location, string>>;
-};
+import { DataTable, DataTableColumn, DataTableProps, useTablePaginationNavigation, useTableSortingNavigation } from "@/app/(components)/data-table";
+import { formatDateString } from "@/app/(lib)/utils/utils";
+import { type Location } from "@/app/configuration/locations/(lib)/types";
+import { GetLocationsResult } from "../(lib)/actions";
+
+
+const columns: DataTableColumn<Location>[] = [
+  {
+    accessorKey: 'id',
+    header: 'ID',
+    enableSorting: true
+  },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'version',
+    header: 'Version',
+    enableSorting: true
+  },
+  {
+    accessorKey: 'created_at',
+    header: 'Created At',
+    enableSorting: true,
+    cell: ({ getValue }) => formatDateString(getValue() as string)
+  },
+  {
+    accessorKey: 'updated_at',
+    header: 'Updated At',
+    enableSorting: true,
+    cell: ({ getValue }) => formatDateString(getValue() as string)
+  }
+];
+
+export type LocationsTableProps = Omit<DataTableProps<Location>, 'columns' | 'data'> & {
+  getLocationsResult: GetLocationsResult;
+}
 
 export function LocationsTable(props: LocationsTableProps) {
-  const {
-    locations = [], 
-    sortingUrls = {},
-    ...tableProps
-  } = props;
+  const { getLocationsResult, ...tableProps } = props;
+  const { sorting, pagination, data } = getLocationsResult;
+
+  const [sortingState, setSortingState] = useTableSortingNavigation(sorting);
+  const [paginationState, setPaginationState] = useTablePaginationNavigation(pagination);
 
   return (
-    <Table {...tableProps}>
-      <TableHeader>
-        <TableRow>
-          <TableHead>
-            {sortingUrls['name'] ? (
-              <Link className="hover:underline" href={sortingUrls['name']}>
-                Name
-              </Link>
-            ) : (
-              "Name"
-            )}
-          </TableHead>
-          <TableHead>
-            {sortingUrls['id'] ? (
-              <Link className="hover:underline" href={sortingUrls['id']}>
-                ID
-              </Link>
-            ) : (
-              "ID"
-            )}
-          </TableHead>
-          <TableHead>
-            {sortingUrls['version'] ? (
-              <Link className="hover:underline" href={sortingUrls['version']}>
-                Version
-              </Link>
-            ) : (
-              "Version"
-            )}
-          </TableHead>
-          <TableHead>
-            {sortingUrls['updated_by'] ? (
-              <Link className="hover:underline" href={sortingUrls['updated_by']}>
-                Updated By
-              </Link>
-            ): (
-              "Updated By"
-            )}
-          </TableHead>
-          <TableHead>
-            {sortingUrls['updated_at'] ? (
-              <Link className="hover:underline" href={sortingUrls['updated_at']}>
-                Updated At
-              </Link>
-            ) : (
-              "Updated At"
-            )}
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {locations.map(location => (
-          <TableRow key={location.id}>
-            <TableCell>
-              <Link className="hover:underline" href={`/configuration/locations/${location.id}`}>
-                {location.name}
-              </Link>
-            </TableCell>
-            <TableCell className="group">
-              {location.id}
-              <CopyToClipboardButton
-                className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity"
-                valueToCopy={location.id}
-              />
-            </TableCell>
-            <TableCell>
-              <Link className="hover:underline" href={`/configuration/locations/${location.id}/events`}>
-                {location.version}
-              </Link>
-            </TableCell>
-            <TableCell>
-              {(location.updated_by_user as any)?.name}
-            </TableCell>
-            <TableCell>
-              {formatDateString(location.updated_at)}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <DataTable
+      manualSorting
+      manualPagination
+      data={data}
+      columns={columns}
+      pageCount={Math.ceil(pagination.count / pagination.limit)}
+      onSortingChange={setSortingState}
+      onPaginationChange={setPaginationState}
+      state={{
+        sorting: sortingState,
+        pagination: paginationState
+      }}
+      {...tableProps}
+    />
   );
 }

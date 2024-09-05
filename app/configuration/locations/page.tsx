@@ -1,39 +1,31 @@
-import { SsrPagination } from "@/app/(components)/ssr-pagination";
-import { getLocations } from "@/app/configuration/locations/(lib)/actions";
-import { PaginationResult, usePaginationSearchParams, usePaginationUrls } from "@/app/(lib)/pagination";
-import { SortingResult, useSortingSearchParams, useSortingUrls } from "@/app/(lib)/sorting";
-import { pick } from "@/app/(lib)/utils/utils";
+import { getFromSearchParams, parseAsInteger, parseAsStringEnum } from "@/app/(lib)/utils/search-params";
+import { getLocations, GetLocationsInput } from "@/app/configuration/locations/(lib)/actions";
 import { CreateLocationDrawer } from "./(components)/create-location-drawer";
 import { LocationsTable } from "./(components)/locations-table";
+import { Location } from "./(lib)/types";
 
-export default async function ConfigurationLocations({
-  params,
+const sortableFields: (keyof Location)[] = [
+  'name',
+  'id',
+  'version',
+  'created_at',
+  'updated_at'
+];
+
+export default async function LocationsPage({
   searchParams
 }: {
-  params: any
   searchParams: Record<string, string>;
 }) {
-  const paginationInput = usePaginationSearchParams(searchParams);
-  const sortingInput = useSortingSearchParams(searchParams);
+  const getLocationsInput: GetLocationsInput = getFromSearchParams(searchParams, {
+    offset: parseAsInteger.withDefault(0),
+    limit: parseAsInteger.withDefault(10),
+    sortKey: parseAsStringEnum(sortableFields).withDefault('name'),
+    sortDirection: parseAsStringEnum(['asc', 'desc']).withDefault('desc')
+  });
   
-  const getLocationsResult = await getLocations({ ...paginationInput, ...sortingInput });
-  const locations = getLocationsResult.data;
-  const paginationResult = pick(getLocationsResult, ['count', 'limit', 'offset']) as PaginationResult;
-  const sortingResult = pick(getLocationsResult, ['sortKey', 'sortDirection']) as SortingResult;
-
-  const sortingUrls = useSortingUrls({
-    keys: ['name', 'id', 'version', 'created_at', 'updated_at'],
-    baseUrl: '/configuration/locations',
-    searchParams,
-    sorting: sortingResult,
-  });
-
-  const ssrPagination = usePaginationUrls({
-    baseUrl: '/configuration/locations',
-    searchParams,
-    pagination: paginationResult,
-  });
-
+  const getLocationsResult = await getLocations(getLocationsInput);
+  
 
   return (
     <section className="basis-full p-12">
@@ -43,14 +35,7 @@ export default async function ConfigurationLocations({
         </h1>
         <CreateLocationDrawer />
       </div>
-      <LocationsTable 
-        locations={locations}
-        sortingUrls={sortingUrls}
-      />
-      <SsrPagination
-        className="mt-4"
-        {...ssrPagination }
-      />
+      <LocationsTable getLocationsResult={getLocationsResult}/>
     </section>
   );
 }

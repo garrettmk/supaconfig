@@ -20,7 +20,7 @@ export default async function ConfigurationEventsPage({
 }) {
   const getEventsInput: GetEventsInput = getFromSearchParams(searchParams, {
     offset: parseAsInteger.withDefault(0),
-    limit: parseAsInteger.withDefault(2),
+    limit: parseAsInteger.withDefault(10),
     sortKey: parseAsStringEnum(sortableFields).withDefault('event_id'),
     sortDirection: parseAsStringEnum(['asc', 'desc']).withDefault('desc')
   });
