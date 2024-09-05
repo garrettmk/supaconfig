@@ -27,8 +27,8 @@ export default async function ConfigurationLayout({ children }: { children: Reac
           <Sidebar/>
           {children}
         </main>
+        <Toaster/>
       </div>
-      <Toaster/>
     </Providers>
   );
 }
