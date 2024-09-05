@@ -26,7 +26,6 @@ export default async function LocationsPage({
   
   const getLocationsResult = await getLocations(getLocationsInput);
   
-
   return (
     <section className="basis-full p-12">
       <div className="flex justify-between items-center mb-12">
