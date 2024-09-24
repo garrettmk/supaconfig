@@ -3,7 +3,7 @@ import { ReadonlyURLSearchParams } from "next/navigation";
 export type MakeUrlInput = {
   baseUrl?: string;
   searchParams?: Record<string, string> | URLSearchParams | ReadonlyURLSearchParams;
-  set?: Record<string, string | number>;
+  set?: Record<string, string | number | null>;
   delete?: string[];
 }
 
@@ -16,15 +16,15 @@ export function makeUrl({
   const newSearchParams = new URLSearchParams(searchParams);
 
   for (const [key, value] of Object.entries(set)) {
-    newSearchParams.set(key, value + '');
+    if (value === null)
+      newSearchParams.delete(key);
+    else
+      newSearchParams.set(key, value + '');
   }
 
   for (const key of deleteValues) {
     newSearchParams.delete(key);
   }
 
-  if (newSearchParams.size)
-    return `${baseUrl}?${newSearchParams.toString()}`;
-  else
-    return baseUrl;
+  return `${baseUrl}?${newSearchParams.toString()}`;
 }

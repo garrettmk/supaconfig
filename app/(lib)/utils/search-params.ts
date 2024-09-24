@@ -38,6 +38,10 @@ export function getFromSearchParams<T extends object, P extends SearchParamsPars
 }
 
 
+export type BuildableSearchParamParserFn<T> = SearchParamParserFn<T> & {
+  withDefault: (defaultValue: T) => SearchParamParserFn<T>;
+};
+
 /**
  * Takes a simple parser function (like parseInt) and returns a SearchParamsParserFn. The returned function
  * also has a withDefault property, which returns another SearchParamsParserFn which will return a default
@@ -46,7 +50,7 @@ export function getFromSearchParams<T extends object, P extends SearchParamsPars
  * @param valueParser 
  * @returns 
  */
-export function makeSearchParamsParser<T>(valueParser: (value: string) => T) {
+export function makeSearchParamsParser<T>(valueParser: (value: string) => T): BuildableSearchParamParserFn<T> {
   const parser = (value: string | null) => value === null ? undefined : valueParser(value);
   parser.withDefault = (defaultValue: T) => (value: string | null) => value === null ? defaultValue : valueParser(value);
 

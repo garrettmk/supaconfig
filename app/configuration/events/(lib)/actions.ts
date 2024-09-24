@@ -10,8 +10,15 @@ import { SortingInput, SortingResult } from "@/app/(lib)/sorting";
  * Get a list of events.
  */
 
-export type GetEventsInput = PaginationInput & SortingInput & {
-
+export type GetEventsInput = {
+  sorting?: SortingInput;
+  pagination?: PaginationInput;
+  filter?: {
+    event_type?: string;
+    aggregate_type?: string;
+    aggregate_id?: string;
+    created_by?: string;
+  }
 };
 
 export type GetEventsResult = {
@@ -21,12 +28,28 @@ export type GetEventsResult = {
 };
 
 export async function getEvents(input: GetEventsInput): Promise<GetEventsResult> {
-  const { offset = 0, limit = 10, sortKey = 'created_at', sortDirection = 'desc' } = input;
+  const { sorting, pagination, filter } = input;
+  const { offset = 0, limit = 10 } = pagination ?? {};
+  const { sortKey = 'event_id', sortDirection = 'desc' } = sorting ?? {};
 
   const supabase = createServerClient();
-  const { data, error, count } = await supabase
-    .from('events')
-    .select('*, created_by (id, name)', { count: 'exact' })
+  const query = filter?.created_by 
+    ? supabase.from('events').select('*, created_by!inner (id, name)', { count: 'exact' })
+    : supabase.from('events').select('*, created_by (id, name)', { count: 'exact' });
+
+  if (filter?.event_type)
+    query.eq('event_type', filter.event_type);
+  
+  if (filter?.aggregate_type)
+    query.eq('aggregate_type', filter.aggregate_type);
+
+  if (filter?.aggregate_id)
+    query.eq('aggregate_id', filter.aggregate_id);
+
+  if (filter?.created_by)
+    query.ilike('created_by.name', `%${filter.created_by}%`);
+
+  const { data, error, count } = await query
     .order(sortKey, { ascending: sortDirection === 'asc' })
     .range(offset, offset + limit - 1);
 

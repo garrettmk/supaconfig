@@ -7,6 +7,7 @@ import { GetLocationsResult } from "../(lib)/actions";
 import { DateStringCell, UUIDCell } from "@/app/(components)/data-table/cells";
 import { Button } from "@/app/(components)/button";
 import Link from "next/link";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 
 const columns: DataTableColumn<Location>[] = [
@@ -45,7 +46,7 @@ const columns: DataTableColumn<Location>[] = [
   }
 ];
 
-export type LocationsTableProps = Omit<DataTableProps<Location>, 'columns' | 'data'> & {
+export type LocationsTableProps = Omit<DataTableProps<Location>, 'table'> & {
   getLocationsResult: GetLocationsResult;
 }
 
@@ -56,19 +57,24 @@ export function LocationsTable(props: LocationsTableProps) {
   const [sortingState, setSortingState] = useTableSortingNavigation(sorting);
   const [paginationState, setPaginationState] = useTablePaginationNavigation(pagination);
 
+  const table = useReactTable({
+    columns,
+    data,
+    manualSorting: true,
+    manualPagination: true,
+    initialState: {
+      sorting: sortingState,
+      pagination: paginationState
+    },
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSortingState,
+    onPaginationChange: setPaginationState,
+    pageCount: Math.ceil(pagination.count / pagination.limit)
+  });
+
   return (
     <DataTable
-      manualSorting
-      manualPagination
-      data={data}
-      columns={columns}
-      pageCount={Math.ceil(pagination.count / pagination.limit)}
-      onSortingChange={setSortingState}
-      onPaginationChange={setPaginationState}
-      state={{
-        sorting: sortingState,
-        pagination: paginationState
-      }}
+    table={table}
       {...tableProps}
     />
   );

@@ -1,7 +1,8 @@
+import { getFromSearchParams, parseAsInteger, parseAsString, parseAsStringEnum } from "@/app/(lib)/utils/search-params";
 import { EventsTable } from "@/app/configuration/events/(components)/events-table";
-import { getEvents, GetEventsInput } from "./(lib)/actions";
-import { getFromSearchParams, parseAsInteger, parseAsStringEnum } from "@/app/(lib)/utils/search-params";
+import { getEvents } from "./(lib)/actions";
 import { type Event } from "./(lib)/types";
+import { create } from "domain";
 
 const sortableFields: (keyof Event)[] = [
   'event_id',
@@ -18,14 +19,28 @@ export default async function ConfigurationEventsPage({
 }: {
   searchParams: Record<string, string>;
 }) {
-  const getEventsInput: GetEventsInput = getFromSearchParams(searchParams, {
-    offset: parseAsInteger.withDefault(0),
-    limit: parseAsInteger.withDefault(10),
+  const sorting = getFromSearchParams(searchParams, {
     sortKey: parseAsStringEnum(sortableFields).withDefault('event_id'),
     sortDirection: parseAsStringEnum(['asc', 'desc']).withDefault('desc')
   });
 
-  const result = await getEvents(getEventsInput);
+  const pagination = getFromSearchParams(searchParams, {
+    offset: parseAsInteger.withDefault(0),
+    limit: parseAsInteger.withDefault(10)
+  });
+
+  const filter = getFromSearchParams(searchParams, {
+    event_type: parseAsString,
+    aggregate_type: parseAsString,
+    aggregate_id: parseAsString,
+    created_by: parseAsString
+  });
+
+  const result = await getEvents({ 
+    sorting,
+    pagination,
+    filter
+  });
 
 
   return (
